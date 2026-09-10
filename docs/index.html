@@ -3,800 +3,526 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Backup App — USB'ni tak, yedeğini o alsın</title>
-<meta name="description" content="Yetkilendirdiğin USB belleği taktığın anda seçtiğin klasörleri sessizce yedekleyen Windows uygulaması. Ücretsiz sürümüyle hemen başla; yönetici hakkı gerekmez.">
-<meta name="theme-color" content="#6750A4">
+<title>Backup App — Yedekleme kendiliğinden olur</title>
+<meta name="description" content="Windows için sessiz yedekleme. USB, NAS, WebDAV, SFTP, S3, Google Drive, OneDrive ve Dropbox. Uçtan uca şifreleme, bağımsız kurtarma aracı, açık depo formatı.">
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
-
+<meta property="og:title" content="Backup App">
+<meta property="og:description" content="Yedekleme kendiliğinden olur. Uçtan uca şifreli, açık formatlı, ücretsiz.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Backup App — USB'ni tak, yedeğini o alsın">
-<meta property="og:description" content="Yetkilendirdiğin USB'yi taktığın anda seçtiğin klasörleri sessizce yedekler. Ücretsiz sürümüyle hemen başla.">
-<meta property="og:image" content="assets/ekran-cihazlar.png">
-<meta property="og:locale" content="tr_TR">
-
 <style>
 /*
-  Sitenin tasarim sistemi uygulamayla ayni: Material Design 3, tohum renk #6750A4.
-  Disaridan hicbir sey yuklenmez — yazi tipi de betik de yok. Boylece site,
-  CDN erisiminin kisitli oldugu aglarda da eksiksiz acilir.
+  Tek dosya, dışarıya hiçbir bağlantı yok: yazı tipi de, betik de, ölçüm de
+  dışarıdan yüklenmiyor. Sebebi iki türlü. Biri gizlilik — siteyi açan kimse
+  üçüncü bir tarafa tanıtılmıyor. Diğeri erişim: dışarıdan yüklenen bir şey
+  bazı ülkelerde engellendiğinde sayfa yarım açılır. Burada öyle bir bağımlılık
+  yok, sayfa her yerde aynı açılır.
 */
-:root {
-  color-scheme: light;
-  --primary:#6750A4; --on-primary:#FFFFFF;
-  --primary-container:#EADDFF; --on-primary-container:#21005D;
-  --secondary-container:#E8DEF8; --on-secondary-container:#1D192B;
-  --tertiary:#7D5260; --tertiary-container:#FFD8E4; --on-tertiary-container:#31111D;
-  --surface:#FFFBFE; --on-surface:#1C1B1F; --on-surface-var:#49454F;
-  --surface-low:#F7F2FA; --surface-container:#F3EDF7;
-  --surface-high:#ECE6F0; --surface-highest:#E6E0E9;
-  --outline:#79747E; --outline-variant:#CAC4D0;
-  --ok-container:#CDEFDC; --on-ok-container:#0B2B1C;
-  --shadow-1:0 1px 2px rgba(28,27,31,.06), 0 6px 20px -10px rgba(28,27,31,.16);
-  --shadow-2:0 2px 6px rgba(28,27,31,.08), 0 22px 48px -20px rgba(28,27,31,.28);
-  --blob-a:rgba(103,80,164,.16);
-  --blob-b:rgba(232,222,248,.85);
-  --blob-c:rgba(125,82,96,.10);
+:root{
+  --bg:#f6f7f9; --card:#fff; --ink:#111827; --dim:#6b7280;
+  --line:#e5e7eb; --blue:#2563eb; --blue-soft:#eaf1fe;
+  --ok:#16a34a; --ok-soft:#e3f6ea; --warn:#b45309; --warn-soft:#fef3c7;
+  --radius:12px; --wrap:1080px;
 }
-html[data-tema="koyu"] {
-  color-scheme: dark;
-  --primary:#D0BCFF; --on-primary:#381E72;
-  --primary-container:#4F378B; --on-primary-container:#EADDFF;
-  --secondary-container:#4A4458; --on-secondary-container:#E8DEF8;
-  --tertiary:#EFB8C8; --tertiary-container:#633B48; --on-tertiary-container:#FFD8E4;
-  --surface:#141218; --on-surface:#E6E0E9; --on-surface-var:#CAC4D0;
-  --surface-low:#1D1B20; --surface-container:#211F26;
-  --surface-high:#2B2930; --surface-highest:#36343B;
-  --outline:#938F99; --outline-variant:#49454F;
-  --ok-container:#21503A; --on-ok-container:#CDEFDC;
-  --shadow-1:0 1px 2px rgba(0,0,0,.4), 0 6px 20px -10px rgba(0,0,0,.6);
-  --shadow-2:0 2px 6px rgba(0,0,0,.5), 0 22px 48px -20px rgba(0,0,0,.75);
-  --blob-a:rgba(208,188,255,.13);
-  --blob-b:rgba(79,55,139,.55);
-  --blob-c:rgba(239,184,200,.09);
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0f1115; --card:#171a21; --ink:#e5e7eb; --dim:#9ca3af;
+    --line:#262b36; --blue:#60a5fa; --blue-soft:#1a2a45;
+    --ok:#4ade80; --ok-soft:#14301f; --warn:#fbbf24; --warn-soft:#3b2f14;
+  }
 }
-
-*,*::before,*::after { box-sizing:border-box; }
-
-body {
-  margin:0;
-  background:var(--surface);
-  color:var(--on-surface);
-  font-family:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
-  font-size:17px; line-height:1.65;
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.65 "Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+}
+.wrap{max-width:var(--wrap); margin:0 auto; padding:0 24px}
+a{color:var(--blue)}
+img{max-width:100%; display:block}
+
+/* Üst çubuk */
+header{
+  position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.bar{display:flex; align-items:center; gap:14px; height:60px}
+.brand{display:flex; align-items:center; gap:10px; font-weight:600; text-decoration:none; color:var(--ink)}
+.brand img{width:26px;height:26px}
+.spacer{flex:1}
+.langs{display:flex; gap:2px; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:3px}
+.langs button{
+  border:0; background:transparent; color:var(--dim); font:inherit; font-size:13px;
+  padding:5px 12px; border-radius:999px; cursor:pointer;
+}
+.langs button[aria-pressed="true"]{background:var(--blue); color:#fff}
+.ghost{
+  display:inline-block; padding:8px 14px; border:1px solid var(--line); border-radius:8px;
+  background:var(--card); color:var(--ink); text-decoration:none; font-size:14px;
 }
 
-h1,h2,h3 {
-  font-family:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
-  margin:0; text-wrap:balance; font-weight:600; letter-spacing:-.02em; line-height:1.15;
-}
-h1 { font-size:clamp(2.3rem,6vw,4rem); }
-h2 { font-size:clamp(1.6rem,3.6vw,2.5rem); }
-h3 { font-size:1.12rem; letter-spacing:-.01em; line-height:1.35; }
-p  { margin:0; }
-a  { color:var(--primary); }
+/* Bölümler */
+section{padding:72px 0; border-bottom:1px solid var(--line)}
+h1{font-size:clamp(30px,5vw,46px); line-height:1.15; margin:0 0 14px; letter-spacing:-.02em}
+h2{font-size:clamp(22px,3vw,30px); line-height:1.25; margin:0 0 10px; letter-spacing:-.01em}
+h3{font-size:17px; margin:0 0 6px}
+p{margin:0 0 14px}
+.lead{font-size:19px; color:var(--dim); max-width:62ch}
+.sub{color:var(--dim); max-width:66ch}
+.small{font-size:14px; color:var(--dim)}
 
-.kap { width:min(1120px,100% - 40px); margin-inline:auto; }
-section { position:relative; padding:clamp(64px,9vw,120px) 0; }
+.grid{display:grid; gap:18px}
+@media(min-width:760px){
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px}
+.shot{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
+.shot img{width:100%}
+.cap{padding:10px 14px; font-size:13px; color:var(--dim); border-top:1px solid var(--line)}
 
-/* --- Organik bulanik lekeler: uygulamanin zemin imzasinin web karsiligi --- */
-.leke { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
-.leke::before, .leke::after {
-  content:""; position:absolute; border-radius:50%; filter:blur(90px);
+/* İndirme */
+.dl{display:flex; flex-wrap:wrap; gap:12px; margin:22px 0 10px}
+.btn{
+  display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+  background:var(--blue); color:#fff; padding:13px 20px; border-radius:10px; font-weight:600;
 }
-.leke::before {
-  width:70vw; height:70vw; max-width:900px; max-height:900px;
-  top:-32%; right:-22%; background:var(--blob-a);
-}
-.leke::after {
-  width:60vw; height:60vw; max-width:760px; max-height:760px;
-  bottom:-34%; left:-20%; background:var(--blob-b);
-}
-section > .kap { position:relative; z-index:1; }
+.btn.second{background:var(--card); color:var(--ink); border:1px solid var(--line); font-weight:500}
+.note{font-size:13px; color:var(--dim)}
 
-/* --- Ust cubuk --------------------------------------------------------- */
-header {
-  position:sticky; top:0; z-index:50;
-  background:color-mix(in srgb, var(--surface) 82%, transparent);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--outline-variant);
+table{width:100%; border-collapse:collapse; font-size:15px}
+th,td{text-align:left; padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+th{font-size:13px; color:var(--dim); font-weight:600}
+code{
+  background:var(--blue-soft); color:var(--blue); padding:2px 6px; border-radius:5px;
+  font:13px/1.5 "Cascadia Mono",Consolas,monospace;
 }
-.ust { display:flex; align-items:center; gap:16px; height:68px; }
-.marka { display:flex; align-items:center; gap:11px; font-weight:600; letter-spacing:-.01em;
-         color:var(--on-surface); text-decoration:none; font-size:1.06rem; }
-.marka img { width:32px; height:32px; }
-.ust nav { display:flex; gap:4px; margin-inline-start:auto; }
-.ust nav a {
-  padding:8px 15px; border-radius:999px; text-decoration:none;
-  color:var(--on-surface-var); font-size:.95rem; font-weight:500;
-  transition:background-color .18s cubic-bezier(.2,0,0,1), color .18s;
+pre{
+  background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+  overflow-x:auto; font:13px/1.6 "Cascadia Mono",Consolas,monospace; margin:0 0 14px;
 }
-.ust nav a:hover { background:color-mix(in srgb, var(--primary) 10%, transparent); color:var(--primary); }
-
-/* --- Butonlar: her zaman hap seklinde (MD3 imzasi) ---------------------- */
-.btn {
-  display:inline-flex; align-items:center; gap:10px; justify-content:center;
-  border:0; border-radius:999px; cursor:pointer; text-decoration:none;
-  font-size:1rem; font-weight:600; font-family:inherit;
-  padding:15px 30px; line-height:1;
-  transition:transform .12s cubic-bezier(.2,0,0,1), box-shadow .25s cubic-bezier(.2,0,0,1),
-             background-color .2s, filter .2s;
-}
-.btn-dolu { background:var(--primary); color:var(--on-primary); box-shadow:var(--shadow-1); }
-.btn-dolu:hover { filter:brightness(1.08); box-shadow:var(--shadow-2); }
-.btn-tonal { background:var(--secondary-container); color:var(--on-secondary-container); }
-.btn-tonal:hover { filter:brightness(.97); }
-html[data-tema="koyu"] .btn-tonal:hover { filter:brightness(1.14); }
-.btn-cerceve { background:transparent; color:var(--primary); box-shadow:inset 0 0 0 1px var(--outline-variant); }
-.btn-cerceve:hover { background:color-mix(in srgb, var(--primary) 8%, transparent); }
-.btn:active { transform:scale(.96); }
-.btn-kucuk { padding:11px 21px; font-size:.94rem; }
-
-.tema-dugme {
-  width:44px; height:44px; padding:0; border-radius:999px; border:0; cursor:pointer;
-  background:transparent; color:var(--on-surface-var);
-  display:grid; place-items:center;
-  transition:background-color .18s, color .18s;
-}
-.tema-dugme:hover { background:color-mix(in srgb, var(--primary) 10%, transparent); color:var(--primary); }
-.tema-dugme svg { width:21px; height:21px; }
-html[data-tema="koyu"] .ay { display:none; }
-html:not([data-tema="koyu"]) .gunes { display:none; }
-
-/* --- Kahraman ---------------------------------------------------------- */
-.kahraman { padding-top:clamp(48px,7vw,88px); padding-bottom:0; }
-.kahraman-ic { display:grid; gap:clamp(40px,5vw,64px); align-items:center; }
-@media (min-width:1000px) { .kahraman-ic { grid-template-columns:minmax(0,1fr) minmax(0,1.08fr); } }
-
-.rozet {
-  display:inline-flex; align-items:center; gap:9px;
-  background:var(--primary-container); color:var(--on-primary-container);
-  padding:8px 17px 8px 13px; border-radius:999px;
-  font-size:.87rem; font-weight:600; margin-bottom:22px;
-}
-.rozet .nokta { width:7px; height:7px; border-radius:50%; background:currentColor; }
-.kahraman p.giris { font-size:clamp(1.06rem,1.9vw,1.24rem); color:var(--on-surface-var); margin-top:22px; max-width:34em; }
-.eylemler { display:flex; flex-wrap:wrap; gap:13px; margin-top:34px; }
-.alt-not { font-size:.87rem; color:var(--on-surface-var); margin-top:18px; }
-
-.ekran-cerceve {
-  border-radius:20px; overflow:hidden; background:var(--surface-container);
-  box-shadow:var(--shadow-2); border:1px solid var(--outline-variant);
-}
-.ekran-cerceve img { display:block; width:100%; height:auto; }
-
-/* --- Rakam seridi ------------------------------------------------------ */
-.rakamlar { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; }
-.rakam {
-  background:var(--surface-container); border-radius:22px; padding:24px 26px;
-  display:flex; flex-direction:column; gap:5px;
-}
-.rakam b { font-size:1.6rem; font-weight:650; letter-spacing:-.02em; }
-.rakam span { font-size:.9rem; color:var(--on-surface-var); }
-
-/* --- Bolum baslıkları -------------------------------------------------- */
-.bolum-bas { max-width:44em; margin-bottom:clamp(34px,4vw,52px); }
-.etiket {
-  font-size:.78rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-  color:var(--primary); margin-bottom:12px;
-}
-.bolum-bas p { color:var(--on-surface-var); margin-top:14px; font-size:1.05rem; }
-
-/* --- Kartlar ----------------------------------------------------------- */
-.izgara { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); }
-.kart {
-  background:var(--surface-container); border-radius:26px; padding:30px;
-  display:flex; flex-direction:column; gap:12px;
-  transition:transform .28s cubic-bezier(.2,0,0,1), box-shadow .28s cubic-bezier(.2,0,0,1);
-}
-.kart:hover { transform:translateY(-3px); box-shadow:var(--shadow-1); }
-.kart p { color:var(--on-surface-var); font-size:.97rem; }
-.simge {
-  width:52px; height:52px; border-radius:17px; display:grid; place-items:center;
-  background:var(--primary-container); color:var(--on-primary-container); margin-bottom:6px;
-}
-.simge svg { width:25px; height:25px; }
-
-/* --- Adimlar ----------------------------------------------------------- */
-.adimlar { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); counter-reset:adim; }
-.adim { background:var(--surface-low); border:1px solid var(--outline-variant); border-radius:26px; padding:30px; }
-.adim-no {
-  counter-increment:adim; width:42px; height:42px; border-radius:14px;
-  background:var(--primary); color:var(--on-primary);
-  display:grid; place-items:center; font-weight:700; font-size:1.05rem; margin-bottom:16px;
-}
-.adim-no::before { content:counter(adim); }
-.adim p { color:var(--on-surface-var); font-size:.97rem; margin-top:9px; }
-
-/* --- Tablo ------------------------------------------------------------- */
-.tablo-kap { overflow-x:auto; border-radius:26px; background:var(--surface-container); }
-table { border-collapse:collapse; width:100%; min-width:600px; }
-th,td { text-align:start; padding:17px 24px; border-bottom:1px solid var(--outline-variant); }
-th { font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; color:var(--on-surface-var); font-weight:700; }
-tbody tr:last-child td { border-bottom:0; }
-td:first-child { font-weight:600; white-space:nowrap; }
-td:last-child { color:var(--on-surface-var); font-size:.97rem; }
-
-.rozet-plan {
-  display:inline-block; padding:5px 12px; border-radius:999px;
-  font-size:.76rem; font-weight:700; white-space:nowrap;
-}
-.rozet-free { background:var(--ok-container); color:var(--on-ok-container); }
-.rozet-prem { background:var(--primary-container); color:var(--on-primary-container); }
-
-/* --- Planlar ----------------------------------------------------------- */
-.planlar { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); align-items:start; }
-.plan {
-  background:var(--surface-container); border-radius:30px; padding:34px;
-  display:flex; flex-direction:column;
-}
-.plan.one-cikan {
-  background:var(--primary-container); color:var(--on-primary-container);
-  box-shadow:var(--shadow-2);
-}
-.plan .ad { font-size:.8rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--primary); }
-.plan.one-cikan .ad { color:var(--on-primary-container); opacity:.72; }
-.plan .fiyat { font-size:2.1rem; font-weight:650; letter-spacing:-.03em; line-height:1.15; margin-top:10px; }
-.plan .aciklama { color:var(--on-surface-var); font-size:.94rem; margin-top:8px; }
-.plan.one-cikan .aciklama { color:color-mix(in srgb, var(--on-primary-container) 78%, transparent); }
-.plan ul { list-style:none; padding:0; margin:24px 0 0; display:grid; gap:12px; }
-.plan li { display:flex; gap:11px; align-items:flex-start; font-size:.95rem; }
-.plan li svg { width:19px; height:19px; flex:none; margin-top:3px; color:var(--primary); }
-.plan.one-cikan li svg { color:var(--on-primary-container); }
-.plan li.kapali { color:var(--on-surface-var); }
-.plan li.kapali svg { color:var(--outline); }
-.plan .btn { margin-top:auto; width:100%; }
-.plan ul + .btn { margin-top:28px; }
-.plan.one-cikan .btn-dolu { background:var(--primary); color:var(--on-primary); }
-
-/* --- Ekran galerisi ---------------------------------------------------- */
-.galeri { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); }
-figure { margin:0; display:flex; flex-direction:column; gap:11px; }
-figcaption { font-size:.9rem; color:var(--on-surface-var); }
-figcaption b { color:var(--on-surface); font-weight:600; }
-
-/* --- Guvenlik ---------------------------------------------------------- */
-.guvenlik { background:var(--surface-container); border-radius:36px; padding:clamp(32px,5vw,60px); }
-.liste { list-style:none; padding:0; margin:24px 0 0; display:grid; gap:14px; }
-.liste li { display:flex; gap:13px; align-items:flex-start; color:var(--on-surface-var); font-size:.99rem; }
-.liste svg { width:21px; height:21px; flex:none; margin-top:3px; color:var(--primary); }
-.liste b { color:var(--on-surface); font-weight:600; }
-
-/* --- SSS --------------------------------------------------------------- */
-.sss { display:grid; gap:11px; }
-details {
-  background:var(--surface-container); border-radius:22px; padding:5px 26px;
-  transition:background-color .2s;
-}
-details[open] { background:var(--surface-high); }
-summary {
-  cursor:pointer; list-style:none; padding:20px 0; font-weight:600; font-size:1.03rem;
-  display:flex; align-items:center; gap:14px;
-}
-summary::-webkit-details-marker { display:none; }
-summary::after {
-  content:""; margin-inline-start:auto; width:11px; height:11px; flex:none;
-  border-right:2.4px solid var(--on-surface-var); border-bottom:2.4px solid var(--on-surface-var);
-  transform:rotate(45deg) translate(-3px,-3px); transition:transform .25s cubic-bezier(.2,0,0,1);
-}
-details[open] summary::after { transform:rotate(225deg) translate(-3px,-3px); }
-details p { padding-bottom:22px; color:var(--on-surface-var); font-size:.99rem; max-width:60em; }
-
-/* --- Indirme cagrisi --------------------------------------------------- */
-.cagri {
-  background:var(--primary); color:var(--on-primary);
-  border-radius:40px; padding:clamp(40px,6vw,72px); text-align:center;
-  position:relative; overflow:hidden;
-}
-.cagri::before {
-  content:""; position:absolute; width:640px; height:640px; border-radius:50%;
-  background:rgba(255,255,255,.13); filter:blur(70px); top:-60%; left:-14%;
-}
-.cagri::after {
-  content:""; position:absolute; width:560px; height:560px; border-radius:50%;
-  background:rgba(231,154,186,.34); filter:blur(80px); bottom:-58%; right:-10%;
-}
-.cagri > * { position:relative; z-index:1; }
-.cagri h2 { color:var(--on-primary); }
-.cagri p { color:color-mix(in srgb, var(--on-primary) 86%, transparent); margin-top:16px; font-size:1.06rem; }
-.cagri .btn-dolu { background:var(--on-primary); color:var(--primary); margin-top:32px; }
-.cagri .btn-cerceve { color:var(--on-primary); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--on-primary) 40%, transparent); margin-top:32px; }
-.cagri .btn-cerceve:hover { background:color-mix(in srgb, var(--on-primary) 12%, transparent); }
-.cagri .eylemler { justify-content:center; }
-
-/* --- Alt bilgi --------------------------------------------------------- */
-footer { border-top:1px solid var(--outline-variant); padding:44px 0 60px; }
-.alt { display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:space-between; }
-.alt p { color:var(--on-surface-var); font-size:.9rem; }
-.alt nav { display:flex; gap:22px; flex-wrap:wrap; }
-.alt nav a { color:var(--on-surface-var); text-decoration:none; font-size:.9rem; }
-.alt nav a:hover { color:var(--primary); text-decoration:underline; }
-
-@media (max-width:640px) {
-  .ust nav { display:none; }
-  section { padding:56px 0; }
-}
-@media (prefers-reduced-motion:reduce) {
-  * { transition-duration:.01ms !important; animation-duration:.01ms !important; }
-}
+.pill{display:inline-block; font-size:12px; padding:3px 10px; border-radius:999px; background:var(--blue-soft); color:var(--blue); font-weight:600}
+.pill.ok{background:var(--ok-soft); color:var(--ok)}
+.pill.warn{background:var(--warn-soft); color:var(--warn)}
+details{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin-bottom:10px}
+summary{cursor:pointer; font-weight:600}
+details p{margin:10px 0 0; color:var(--dim)}
+footer{padding:40px 0 60px; color:var(--dim); font-size:14px}
+.hide{display:none !important}
 </style>
 </head>
-
 <body>
 
 <header>
-  <div class="kap ust">
-    <a class="marka" href="#"><img src="assets/logo.svg" alt=""> Backup App</a>
-    <nav>
-      <a href="#nasil">Nasıl çalışır</a>
-      <a href="#ozellikler">Özellikler</a>
-      <a href="#modlar">Modlar</a>
-      <a href="#uyelik">Planlar</a>
-      <a href="#ekranlar">Ekranlar</a>
-      <a href="#sss">S.S.S.</a>
-    </nav>
-    <button class="tema-dugme" id="tema" type="button" aria-label="Temayı değiştir" title="Temayı değiştir">
-      <svg class="ay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
-      <svg class="gunes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>
-    </button>
-    <a class="btn btn-dolu btn-kucuk" href="#indir">İndir</a>
+  <div class="wrap bar">
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt=""><span>Backup App</span></a>
+    <div class="spacer"></div>
+    <div class="langs" role="group" aria-label="Dil / Language">
+      <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="ghost" href="#indir" data-tr="İndir" data-en="Download">İndir</a>
   </div>
 </header>
 
-<!-- ============================ KAHRAMAN ============================ -->
-<section class="kahraman">
-  <div class="leke" aria-hidden="true"></div>
-  <div class="kap kahraman-ic">
-    <div>
-      <div class="rozet"><span class="nokta"></span> Windows için ücretsiz</div>
-      <h1>USB'ni tak,<br>yedeğini o alsın.</h1>
-      <p class="giris">
-        Yetkilendirdiğin belleği taktığın anda, seçtiğin klasörler sessizce kopyalanır.
-        Tıklamak yok, hatırlamak yok. Tanımadığı hiçbir cihaza dokunmaz.
-      </p>
-      <div class="eylemler">
-        <a class="btn btn-dolu" href="#indir">
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11"/><path d="M7.4 10.4 12 15l4.6-4.6"/><path d="M5 19.5h14"/></svg>
-          Windows için indir
-        </a>
-        <a class="btn btn-cerceve" href="#nasil">
-          Nasıl çalışır?
-        </a>
-      </div>
-      <p class="alt-not">Tek dosya · Kurulum sihirbazı içinde · Yönetici hakkı gerekmez</p>
-    </div>
-    <div class="ekran-cerceve">
-      <img src="assets/ekran-cihazlar.png" width="980" height="712"
-           alt="Backup App ana penceresi: yetkili cihaz kartları ve takılı sürücüler" data-ekran="cihazlar">
-    </div>
-  </div>
-</section>
+<main id="top">
 
-<!-- ============================ RAKAMLAR ============================ -->
-<section style="padding-top:clamp(40px,5vw,64px)">
-  <div class="kap">
-    <div class="rakamlar">
-      <div class="rakam"><b>%0</b><span>Beklerken CPU kullanımı — olaya dayalı çalışır, tarama yapmaz</span></div>
-      <div class="rakam"><b>5</b><span>Yedekleme modu — cihaz başına ayrı seçilir</span></div>
-      <div class="rakam"><b>9 haneli</b><span>Cihaza özel güvenlik kodu; düz metin saklanmaz</span></div>
-      <div class="rakam"><b>50/50</b><span>İşlevsel test geçiyor — motor gerçek dosyalarla sınanır</span></div>
+<!-- ---------------------------------------------------------------- Giriş -->
+<section>
+  <div class="wrap">
+    <span class="pill" data-tr="Sürüm 2.0 · Windows" data-en="Version 2.0 · Windows">Sürüm 2.0 · Windows</span>
+    <h1 data-tr="Yedekleme, sen unutsan da olur." data-en="Backups that happen even when you forget.">Yedekleme, sen unutsan da olur.</h1>
+    <p class="lead"
+       data-tr="USB belleğini tak, yedek kendiliğinden başlasın. Ya da bir NAS, bir bulut hesabı ekle; kendi saatinde çalışsın. Dosyaların bilgisayarından çıkmadan şifrelenir."
+       data-en="Plug in your USB stick and the backup starts on its own. Or add a NAS or a cloud account and let it run on a schedule. Files are encrypted before they leave your computer.">
+      USB belleğini tak, yedek kendiliğinden başlasın. Ya da bir NAS, bir bulut hesabı ekle; kendi saatinde çalışsın. Dosyaların bilgisayarından çıkmadan şifrelenir.
+    </p>
+
+    <div class="dl">
+      <a class="btn" href="https://github.com/Ashura-Space/backup-app/releases/latest/download/BackupApp-Setup.exe">
+        <span data-tr="Backup App indir" data-en="Download Backup App">Backup App indir</span>
+      </a>
+      <a class="btn second" href="https://github.com/Ashura-Space/backup-app/releases/latest/download/BackupApp-Lite-Setup.exe">
+        <span data-tr="Lite sürümü indir" data-en="Download Lite">Lite sürümü indir</span>
+      </a>
+    </div>
+    <p class="note"
+       data-tr="Ücretsiz. Kurulum tek dosya, yönetici hakkı istemez. Windows 10 ve 11."
+       data-en="Free. A single setup file, no administrator rights needed. Windows 10 and 11.">
+      Ücretsiz. Kurulum tek dosya, yönetici hakkı istemez. Windows 10 ve 11.
+    </p>
+
+    <div class="shot" style="margin-top:28px">
+      <img data-src-tr="assets/shot-home-tr.png" data-src-en="assets/shot-home-en.png" src="assets/shot-home-tr.png" alt="Backup App">
     </div>
   </div>
 </section>
 
-<!-- ============================ NASIL ÇALIŞIR ============================ -->
-<section id="nasil">
-  <div class="kap">
-    <div class="bolum-bas">
-      <div class="etiket">Nasıl çalışır</div>
-      <h2>Bir kez tanıt, bir daha düşünme</h2>
-      <p>Uygulama sistem tepsisinde bekler. Bir sürücü takıldığında Windows onu haber verir —
-        uygulama sürekli tarama yapmaz, bu yüzden boştayken hiçbir şey harcamaz.</p>
+<!-- ------------------------------------------------------------ Ne yapar -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Bir kez kur, sonra unut" data-en="Set it up once, then forget it">Bir kez kur, sonra unut</h2>
+    <p class="sub"
+       data-tr="Uygulama saatin yanında sessizce bekler. Yetkilendirdiğin bir cihaz takıldığında işe koyulur; uzak bir hedef varsa kendi zamanlamasında çalışır."
+       data-en="The app waits quietly by the clock. When a device you authorised is plugged in, it gets to work; a remote destination runs on its own schedule.">
+      Uygulama saatin yanında sessizce bekler. Yetkilendirdiğin bir cihaz takıldığında işe koyulur; uzak bir hedef varsa kendi zamanlamasında çalışır.
+    </p>
+
+    <div class="grid g3" style="margin-top:26px">
+      <div class="card">
+        <h3 data-tr="Takınca başlar" data-en="Starts when you plug in">Takınca başlar</h3>
+        <p class="small"
+           data-tr="Cihazı bir kez yetkilendirirsin. Her takışta yedek kendiliğinden çalışır; hiçbir düğmeye basman gerekmez."
+           data-en="You authorise the device once. Every time you plug it in the backup runs on its own; you press nothing.">
+          Cihazı bir kez yetkilendirirsin. Her takışta yedek kendiliğinden çalışır; hiçbir düğmeye basman gerekmez.
+        </p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Yalnızca senin cihazın" data-en="Only your device">Yalnızca senin cihazın</h3>
+        <p class="small"
+           data-tr="Her yetkili cihaza gizli bir işaret yazılır. Başka bir bellek takıldığında hiçbir şey olmaz."
+           data-en="Each authorised device gets a secret marker. Plug in a different stick and nothing happens.">
+          Her yetkili cihaza gizli bir işaret yazılır. Başka bir bellek takıldığında hiçbir şey olmaz.
+        </p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Unutursan hatırlatır" data-en="It reminds you">Unutursan hatırlatır</h3>
+        <p class="small"
+           data-tr="Uzun süredir yedek almadıysan sessiz bir bildirim gelir. Asıl sorun zaten unutmaktır."
+           data-en="If you have not backed up in a while a quiet notification appears. Forgetting is the real problem.">
+          Uzun süredir yedek almadıysan sessiz bir bildirim gelir. Asıl sorun zaten unutmaktır.
+        </p>
+      </div>
     </div>
-    <div class="adimlar">
-      <div class="adim">
-        <div class="adim-no"></div>
-        <h3>Cihazı yetkilendir</h3>
-        <p>USB'yi tak, <b>Cihaz Ekle</b> de. Uygulama o cihaza özel 9 haneli bir güvenlik kodu
-          üretir ve köküne gizli bir anahtar dosyası yazar.</p>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------- Hedefler -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Cebindeki bellek, evdeki kutu ya da bulut" data-en="A stick in your pocket, a box at home, or the cloud">Cebindeki bellek, evdeki kutu ya da bulut</h2>
+    <p class="sub"
+       data-tr="Sekiz hedef türü var ve hepsi ücretsiz. Aynı anda birkaçını birden kullanabilirsin; her hedefin kendi modu, kendi zamanlaması ve kendi kaynakları olur."
+       data-en="Eight kinds of destination, all free. You can use several at once; each has its own mode, schedule and sources.">
+      Sekiz hedef türü var ve hepsi ücretsiz. Aynı anda birkaçını birden kullanabilirsin; her hedefin kendi modu, kendi zamanlaması ve kendi kaynakları olur.
+    </p>
+
+    <div class="grid g2" style="margin-top:24px">
+      <div class="card">
+        <table>
+          <tr><th data-tr="Hedef" data-en="Destination">Hedef</th><th data-tr="Not" data-en="Note">Not</th></tr>
+          <tr><td>USB / <span data-tr="harici disk" data-en="external drive">harici disk</span></td><td class="small" data-tr="Takınca çalışır" data-en="Runs on plug-in">Takınca çalışır</td></tr>
+          <tr><td data-tr="Ağ klasörü (NAS)" data-en="Network folder (NAS)">Ağ klasörü (NAS)</td><td class="small">SMB</td></tr>
+          <tr><td>WebDAV</td><td class="small">Nextcloud, Synology, QNAP</td></tr>
+          <tr><td>SFTP</td><td class="small" data-tr="SSH üzerinden" data-en="Over SSH">SSH üzerinden</td></tr>
+        </table>
       </div>
-      <div class="adim">
-        <div class="adim-no"></div>
-        <h3>Neyin yedekleneceğini seç</h3>
-        <p>Klasör ve dosyaları ekle, yedekleme modunu seç. Her mod ne yaptığını tek satırda
-          anlatır; belgeye bakman gerekmez.</p>
+      <div class="card">
+        <table>
+          <tr><th data-tr="Hedef" data-en="Destination">Hedef</th><th data-tr="Not" data-en="Note">Not</th></tr>
+          <tr><td data-tr="S3 uyumlu" data-en="S3-compatible">S3 uyumlu</td><td class="small">Backblaze B2, Wasabi, R2, MinIO</td></tr>
+          <tr><td>Google Drive</td><td class="small" data-tr="Yalnızca Backup App" data-en="Backup App only">Yalnızca Backup App</td></tr>
+          <tr><td>OneDrive</td><td class="small" data-tr="Yalnızca Backup App" data-en="Backup App only">Yalnızca Backup App</td></tr>
+          <tr><td>Dropbox</td><td class="small" data-tr="Yalnızca Backup App" data-en="Backup App only">Yalnızca Backup App</td></tr>
+        </table>
       </div>
-      <div class="adim">
-        <div class="adim-no"></div>
-        <h3>Tak ve unut</h3>
-        <p>O cihaz her takıldığında anahtar kontrol edilir, eşleşirse yedekleme kendiliğinden
-          başlar. Yabancı cihazlara dokunulmaz.</p>
+    </div>
+
+    <div class="shot" style="margin-top:24px">
+      <img data-src-tr="assets/shot-devices-tr.png" data-src-en="assets/shot-devices-en.png" src="assets/shot-devices-tr.png" alt="">
+      <div class="cap" data-tr="Hedefler tek listede: takılı olan da, buluttaki de." data-en="Every destination in one list: the plugged-in one and the cloud one alike.">Hedefler tek listede: takılı olan da, buluttaki de.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------ Şifreleme -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Kara kutu — onu tutan kişiye bile" data-en="A black box, even to the person holding it">Kara kutu — onu tutan kişiye bile</h2>
+    <p class="sub"
+       data-tr="Şifreleme bilgisayarında olur. Hedefe ulaşan hiç kimse — bulut sağlayıcısı, NAS'ına erişen biri, belleği bulan biri, biz — dosyalarını okuyamaz. Dosya adları ve klasör yapısı da gizlenir; bir klasörün adı bile bilgi verir."
+       data-en="Encryption happens on your computer. Nobody who reaches the destination — the cloud provider, someone on your NAS, whoever finds the stick, or us — can read your files. File names and folder structure are hidden too; even a folder name tells a story.">
+      Şifreleme bilgisayarında olur. Hedefe ulaşan hiç kimse — bulut sağlayıcısı, NAS'ına erişen biri, belleği bulan biri, biz — dosyalarını okuyamaz. Dosya adları ve klasör yapısı da gizlenir; bir klasörün adı bile bilgi verir.
+    </p>
+
+    <div class="grid g3" style="margin-top:26px">
+      <div class="card">
+        <h3>AES-256-GCM</h3>
+        <p class="small"
+           data-tr="Her parça kendi doğrulama etiketini taşır. Tek bir bit değişse çözme reddedilir; bozuk bir yedek sessizce yanlış veri döndürmez."
+           data-en="Every chunk carries its own tag. Change a single bit and decryption is refused; a damaged backup never returns wrong data silently.">
+          Her parça kendi doğrulama etiketini taşır. Tek bir bit değişse çözme reddedilir; bozuk bir yedek sessizce yanlış veri döndürmez.
+        </p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Kurtarma anahtarı" data-en="Recovery key">Kurtarma anahtarı</h3>
+        <p class="small"
+           data-tr="Parolanı unutursan tek dönüş yolu. Bir kez gösterilir. İkisi de kaybolursa yedek okunamaz — uçtan uca şifrelemenin anlamı budur."
+           data-en="The only way back if you forget the passphrase. Shown once. Lose both and the backup cannot be read — that is what end-to-end means.">
+          Parolanı unutursan tek dönüş yolu. Bir kez gösterilir. İkisi de kaybolursa yedek okunamaz — uçtan uca şifrelemenin anlamı budur.
+        </p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Silmeye karşı koruma" data-en="Protection against deletion">Silmeye karşı koruma</h3>
+        <p class="small"
+           data-tr="Yalnızca ekleme kipinde bu bilgisayar yedeğe ekleyebilir ama silemez. Silinen dosya işaretlenir ve geri alma süresi boyunca durur."
+           data-en="In append-only mode this computer can add to the backup but never remove from it. A deleted file is marked and kept for the undelete window.">
+          Yalnızca ekleme kipinde bu bilgisayar yedeğe ekleyebilir ama silemez. Silinen dosya işaretlenir ve geri alma süresi boyunca durur.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:24px">
+      <div class="shot">
+        <img src="assets/shot-recovery.png" alt="">
+        <div class="cap" data-tr="Kurtarma anahtarı bir kez gösterilir." data-en="The recovery key is shown once.">Kurtarma anahtarı bir kez gösterilir.</div>
+      </div>
+      <div class="shot">
+        <img src="assets/shot-restore.png" alt="">
+        <div class="cap" data-tr="Geri yükleme: ne varsa listelenir, seçtiğin geri gelir." data-en="Restore: everything is listed, what you pick comes back.">Geri yükleme: ne varsa listelenir, seçtiğin geri gelir.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================ ÖZELLİKLER ============================ -->
-<section id="ozellikler">
-  <div class="leke" aria-hidden="true"></div>
-  <div class="kap">
-    <div class="bolum-bas">
-      <div class="etiket">Özellikler</div>
-      <h2>Arka planda sessiz, önünde net</h2>
-    </div>
-    <div class="izgara">
+<!-- --------------------------------------------------------- Açık format -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Uygulama ortadan kalksa bile verine ulaşırsın" data-en="You can reach your data even if the app disappears">Uygulama ortadan kalksa bile verine ulaşırsın</h2>
+    <p class="sub"
+       data-tr="Bir yedekleme aracına güvenmenin en zor yanı budur: ya bir gün program çalışmazsa? Depo formatının tamamı belgelenmiştir ve yanında, uygulamayla hiçbir kod paylaşmayan tek dosyalık bir kurtarma aracı gelir. Yedek klasörü ve parola yeter."
+       data-en="This is the hardest part of trusting a backup tool: what if the program stops working one day? The whole repository format is documented, and a single-file recovery tool ships with it that shares no code with the app. The backup folder and the passphrase are enough.">
+      Bir yedekleme aracına güvenmenin en zor yanı budur: ya bir gün program çalışmazsa? Depo formatının tamamı belgelenmiştir ve yanında, uygulamayla hiçbir kod paylaşmayan tek dosyalık bir kurtarma aracı gelir. Yedek klasörü ve parola yeter.
+    </p>
 
-      <div class="kart">
-        <div class="simge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6 20 5.6v5.9c0 5.5-3.5 8.5-8 9.9-4.5-1.4-8-4.4-8-9.9V5.6z"/><path d="m8.6 12 2.4 2.4 4.4-4.8"/></svg></div>
-        <h3>Yalnızca tanıdığı cihaza</h3>
-        <p>Her cihazın kendine ait gizli bir anahtarı vardır. Anahtar eşleşmeyen hiçbir belleğe
-          tek bir dosya bile yazılmaz.</p>
-      </div>
+<pre>ubk-recover list    &lt;<span data-tr="yedek-klasörü" data-en="backup-folder">yedek-klasörü</span>&gt;
+ubk-recover verify  &lt;<span data-tr="yedek-klasörü" data-en="backup-folder">yedek-klasörü</span>&gt;
+ubk-recover restore &lt;<span data-tr="yedek-klasörü" data-en="backup-folder">yedek-klasörü</span>&gt; &lt;<span data-tr="hedef" data-en="destination">hedef</span>&gt;</pre>
 
-      <div class="kart">
-        <div class="simge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5.2l3.6 2"/></svg></div>
-        <h3>Boşta hiçbir şey harcamaz</h3>
-        <p>Sürekli tarama yok. Windows'un cihaz takma olayını dinler; beklerken işlemci
-          kullanımı sıfırdır.</p>
-      </div>
-
-      <div class="kart">
-        <div class="simge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.6 18.4V5.6h5.6l2 2.4h9.2v10.4z"/></svg></div>
-        <h3>Beş yedekleme modu</h3>
-        <p>Tam Yenile, Artımlı, Ayna, Sürümlü, Sadece Ekle. Her cihaz için ayrı seçilir —
-          biri arşiv, biri hızlı senkron olabilir.</p>
-      </div>
-
-      <div class="kart">
-        <div class="simge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5.2l3.6 2"/></svg></div>
-        <h3>Unutursan hatırlatır</h3>
-        <p>Cihazı takmayı unuttuysan haber verir: <b>“5 gündür yedeklenmedi.”</b>
-          Aralığı sen seçersin — 24 saatten bir aya kadar, ya da hiç.</p>
-      </div>
-
-      <div class="kart">
-        <div class="simge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></div>
-        <h3>Açık ve koyu tema</h3>
-        <p>İkisi de aynı renk kimliğinden türer. Ayarlardan değişir, anında kaydedilir —
-          bu sitenin sağ üstündeki düğme gibi.</p>
-      </div>
-
-      <div class="kart">
-        <div class="simge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11"/><path d="M7.4 10.4 12 15l4.6-4.6"/><path d="M5 19.5h14"/></svg></div>
-        <h3>Tek dosya, kurulum içinde</h3>
-        <p>İndirdiğin <code>.exe</code> hem kurulum hem uygulamadır. Kullanıcı klasörüne kurulur;
-          yönetici hakkı istemez. Kurmadan da çalıştırabilirsin.</p>
-      </div>
-
-      <div class="kart">
-        <div class="simge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h16"/><path d="M6.5 6.5 7.4 20h9.2l.9-13.5"/><path d="M9.2 6.5 9.6 4h4.8l.4 2.5"/></svg></div>
-        <h3>İzsiz kaldırma</h3>
-        <p>Tek ekrandan her şey: başlangıç kaydı, zamanlanmış görev, kısayollar, ayarlar ve
-          istersen cihaz anahtarları. Neyin silineceğini önce gösterir.</p>
-      </div>
-
-    </div>
+    <p class="small"
+       data-tr="Dizin bozulursa araç onu dosyaların kendi başlıklarından yeniden kurar. Biçimin tamamı FORMAT.md içinde yazılıdır; isteyen kendi çözücüsünü yazabilir."
+       data-en="If the index is damaged the tool rebuilds it from the files themselves. The whole format is written down in FORMAT.md; anyone can write their own decoder.">
+      Dizin bozulursa araç onu dosyaların kendi başlıklarından yeniden kurar. Biçimin tamamı FORMAT.md içinde yazılıdır; isteyen kendi çözücüsünü yazabilir.
+    </p>
+    <p><a href="FORMAT.md">FORMAT.md</a> · <a href="SECURITY.md" data-tr="Güvenlik notları" data-en="Security notes">Güvenlik notları</a> · <a href="AUDIT.md" data-tr="Denetim raporu" data-en="Audit report">Denetim raporu</a></p>
   </div>
 </section>
 
-<!-- ============================ MODLAR ============================ -->
-<section id="modlar">
-  <div class="kap">
-    <div class="bolum-bas">
-      <div class="etiket">Yedekleme modları</div>
-      <h2>Her cihaz için ayrı davranış</h2>
-      <p>Hangi modu seçersen seç, silme işlemi <b>yalnızca</b> cihazdaki kendi yedek klasöründe olur.
-        Kaynak klasörlerin ve cihazın geri kalanı asla değiştirilmez.</p>
-    </div>
-    <div class="tablo-kap">
+<!-- ------------------------------------------------------------- Modlar -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Her hedef için ayrı davranış" data-en="A different behaviour for every destination">Her hedef için ayrı davranış</h2>
+    <p class="sub"
+       data-tr="Beş mod var. Hangisinin ne yaptığı arayüzde tek cümleyle yazar; belgeye bakman gerekmez."
+       data-en="Five modes. What each one does is written in one sentence in the app; you never need the manual.">
+      Beş mod var. Hangisinin ne yaptığı arayüzde tek cümleyle yazar; belgeye bakman gerekmez.
+    </p>
+
+    <div class="card" style="margin-top:22px">
       <table>
-        <thead><tr><th>Mod</th><th>Ne yapar</th><th>Plan</th></tr></thead>
-        <tbody>
-          <tr><td>Tam Yenile</td><td>Hedefteki eski yedek silinir, kaynağın o anki hali baştan kopyalanır.</td><td><span class="rozet-plan rozet-prem">Üyelik</span></td></tr>
-          <tr><td>Artımlı</td><td>Yalnızca yeni ve değişen dosyalar eklenir; hiçbir şey silinmez.</td><td><span class="rozet-plan rozet-prem">Üyelik</span></td></tr>
-          <tr><td>Ayna</td><td>Hedef kaynakla birebir olur: kaynakta silinen hedeften de silinir, değişmeyen tekrar kopyalanmaz.</td><td><span class="rozet-plan rozet-prem">Üyelik</span></td></tr>
-          <tr><td>Sürümlü</td><td>Her yedek tarihli ayrı bir klasöre kopyalanır; geçmiş korunur.</td><td><span class="rozet-plan rozet-free">Ücretsiz</span></td></tr>
-          <tr><td>Sadece Ekle</td><td>Yalnızca yeni dosyalar eklenir; var olanlara dokunulmaz. Varsayılan.</td><td><span class="rozet-plan rozet-free">Ücretsiz</span></td></tr>
-        </tbody>
+        <tr><th data-tr="Mod" data-en="Mode">Mod</th><th data-tr="Ne yapar" data-en="What it does">Ne yapar</th><th></th></tr>
+        <tr><td data-tr="Sadece Ekle" data-en="Add Only">Sadece Ekle</td><td class="small" data-tr="Yalnızca yeni dosyalar eklenir; var olana dokunulmaz." data-en="Only new files are added; existing ones are untouched.">Yalnızca yeni dosyalar eklenir; var olana dokunulmaz.</td><td><span class="pill ok" data-tr="Ücretsiz" data-en="Free">Ücretsiz</span></td></tr>
+        <tr><td data-tr="Sürümlü" data-en="Versioned">Sürümlü</td><td class="small" data-tr="Her çalışma kendi tarihli klasörüne gider; geçmiş korunur." data-en="Each run goes to its own dated folder; history is kept.">Her çalışma kendi tarihli klasörüne gider; geçmiş korunur.</td><td><span class="pill ok" data-tr="Ücretsiz" data-en="Free">Ücretsiz</span></td></tr>
+        <tr><td data-tr="Artımlı" data-en="Incremental">Artımlı</td><td class="small" data-tr="Yeni ve değişen dosyalar eklenir; hiçbir şey silinmez." data-en="New and changed files are added; nothing is deleted.">Yeni ve değişen dosyalar eklenir; hiçbir şey silinmez.</td><td><span class="pill" data-tr="Üyelik" data-en="Membership">Üyelik</span></td></tr>
+        <tr><td data-tr="Ayna" data-en="Mirror">Ayna</td><td class="small" data-tr="Hedef kaynakla birebir olur; kaynakta silinen hedeften de silinir." data-en="The destination matches the source exactly; deletions are mirrored.">Hedef kaynakla birebir olur; kaynakta silinen hedeften de silinir.</td><td><span class="pill" data-tr="Üyelik" data-en="Membership">Üyelik</span></td></tr>
+        <tr><td data-tr="Tam Yenile" data-en="Full Refresh">Tam Yenile</td><td class="small" data-tr="Eski yedek silinir, kaynak baştan kopyalanır." data-en="The old backup is cleared and the source is copied fresh.">Eski yedek silinir, kaynak baştan kopyalanır.</td><td><span class="pill" data-tr="Üyelik" data-en="Membership">Üyelik</span></td></tr>
       </table>
     </div>
-  </div>
-</section>
 
-<!-- ============================ PLANLAR ============================ -->
-<section id="uyelik">
-  <div class="leke" aria-hidden="true"></div>
-  <div class="kap">
-    <div class="bolum-bas">
-      <div class="etiket">Planlar</div>
-      <h2>Ücretsiz başla, ihtiyacın olursa büyüt</h2>
-      <p>Ücretsiz sürüm kırpılmış bir sürüm değil: otomatik algılama, cihaz yetkilendirme,
-        hatırlatıcı, tema, sınırsız cihaz ve sınırsız dosya — hepsi açık. Öncelikli üyelik
-        yalnızca üç ileri yedekleme modunu ekler.</p>
-    </div>
-
-    <div class="planlar">
-      <div class="plan">
-        <div class="ad">Ücretsiz</div>
-        <div class="fiyat">0 ₺</div>
-        <div class="aciklama">Süresiz. Kart istemez, hesap istemez.</div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span>Sınırsız cihaz ve sınırsız dosya</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span>Takınca otomatik yedekleme</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span><b>Sadece Ekle</b> ve <b>Sürümlü</b> modları</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span>Açık ve koyu tema</span></li>
-          <li class="kapali"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5"/></svg><span>Tam Yenile, Artımlı, Ayna</span></li>
-        </ul>
-        <a class="btn btn-cerceve" href="#indir">Ücretsiz indir</a>
-      </div>
-
-      <div class="plan one-cikan">
-        <div class="ad">Öncelikli</div>
-        <div class="fiyat">Beş modun tamamı</div>
-        <div class="aciklama">Tek anahtar. Ücretsiz sürümdeki her şey dahil.</div>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span>Ücretsiz sürümdeki her şey</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span><b>Tam Yenile</b> — hedef baştan yazılır, en temiz yedek</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span><b>Artımlı</b> — yalnızca değişenler kopyalanır, hızlıdır</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span><b>Ayna</b> — hedef kaynakla birebir kalır</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg><span>Anahtar çevrimdışı doğrulanır, internet gerekmez</span></li>
-        </ul>
-        <a class="btn btn-dolu" href="#nasil-alinir">Nasıl alınır?</a>
-      </div>
+    <div class="shot" style="margin-top:24px">
+      <img src="assets/shot-rules.png" alt="">
+      <div class="cap" data-tr="Kurallar sayfası: mod, silme koruması ve USB Guard tek yerde." data-en="Rules: mode, deletion protection and USB Guard in one place.">Kurallar sayfası: mod, silme koruması ve USB Guard tek yerde.</div>
     </div>
   </div>
 </section>
 
-<!-- ============================ GÜVENLİK ============================ -->
+<!-- ---------------------------------------------------------- USB Guard -->
 <section>
-  <div class="kap">
-    <div class="guvenlik">
-      <div class="bolum-bas" style="margin-bottom:0">
-        <div class="etiket">Güvenlik</div>
-        <h2>Yedekleme aracı, veri kaybettirmemekle başlar</h2>
+  <div class="wrap">
+    <h2 data-tr="USB Guard: dört şey yapar, bir şeyi yapamaz" data-en="USB Guard: four things it does, one it cannot">USB Guard: dört şey yapar, bir şeyi yapamaz</h2>
+    <div class="grid g4" style="margin-top:22px">
+      <div class="card"><h3 data-tr="AutoPlay'i kapatır" data-en="Turns AutoPlay off">AutoPlay'i kapatır</h3><p class="small" data-tr="USB kötü yazılımı en çok böyle yayılır." data-en="This is how most USB malware spreads.">USB kötü yazılımı en çok böyle yayılır.</p></div>
+      <div class="card"><h3 data-tr="Defender ile tarar" data-en="Scans with Defender">Defender ile tarar</h3><p class="small" data-tr="Bir şey bulunursa yedekleme başlamaz." data-en="If something is found the backup does not start.">Bir şey bulunursa yedekleme başlamaz.</p></div>
+      <div class="card"><h3 data-tr="Yabancı yazmayı görür" data-en="Notices foreign writes">Yabancı yazmayı görür</h3><p class="small" data-tr="Bizim dışımızda yazan olursa haber verir." data-en="Tells you if something other than us writes.">Bizim dışımızda yazan olursa haber verir.</p></div>
+      <div class="card"><h3 data-tr="Değişikliği söyler" data-en="Reports changes">Değişikliği söyler</h3><p class="small" data-tr="Cihazda ne eklenmiş, ne değişmiş, ne silinmiş." data-en="What was added, changed or removed on the device.">Cihazda ne eklenmiş, ne değişmiş, ne silinmiş.</p></div>
+    </div>
+    <p class="small" style="margin-top:16px">
+      <span class="pill warn" data-tr="Dürüstlük notu" data-en="Honesty note">Dürüstlük notu</span>
+      <span data-tr=" Bu uygulama başka bir programın USB'ni okumasını engelleyemez. Bunun için çekirdek sürücüsü ve yönetici hakkı gerekir; uygulama yönetici hakkı istemez. Koruma ve tespit yapar, engelleme yapmaz — arayüzde de böyle yazar."
+            data-en=" This app cannot stop another program from reading your USB device. That needs a kernel driver and administrator rights, and the app asks for neither. It protects and detects; it does not block — and it says so in the interface."> Bu uygulama başka bir programın USB'ni okumasını engelleyemez. Bunun için çekirdek sürücüsü ve yönetici hakkı gerekir; uygulama yönetici hakkı istemez. Koruma ve tespit yapar, engelleme yapmaz — arayüzde de böyle yazar.</span>
+    </p>
+  </div>
+</section>
+
+<!-- --------------------------------------------------------- Görünüm -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Açık ve koyu, Türkçe ve İngilizce" data-en="Light and dark, Turkish and English">Açık ve koyu, Türkçe ve İngilizce</h2>
+    <p class="sub"
+       data-tr="Arayüz sıfırdan çizildi: her düğme, her kart, her ikon. Windows'un kendi yazı tipini kullanır ve sistemin temasını izleyebilir."
+       data-en="The interface is drawn from scratch: every button, card and icon. It uses Windows' own typeface and can follow the system theme.">
+      Arayüz sıfırdan çizildi: her düğme, her kart, her ikon. Windows'un kendi yazı tipini kullanır ve sistemin temasını izleyebilir.
+    </p>
+    <div class="grid g2" style="margin-top:24px">
+      <div class="shot">
+        <img data-src-tr="assets/shot-settings-tr.png" data-src-en="assets/shot-settings-en.png" src="assets/shot-settings-tr.png" alt="">
+        <div class="cap" data-tr="Ayarlar altı sekmeye ayrıldı." data-en="Settings, split into six tabs.">Ayarlar altı sekmeye ayrıldı.</div>
       </div>
-      <ul class="liste">
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg>
-          <span><b>Kaynağa asla dokunulmaz.</b> Uygulama yalnızca okur; bilgisayarındaki hiçbir dosya değiştirilmez veya silinmez.</span></li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg>
-          <span><b>Silme sınırı iki kez doğrulanır.</b> Hedef klasör adı serbest metindir; mutlak yollar ve üst dizin atlamaları reddedilir, silme anında yol yeniden sınanır.</span></li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg>
-          <span><b>Kod düz metin saklanmaz.</b> 9 haneli güvenlik kodunun yalnızca SHA-256 özeti tutulur.</span></li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg>
-          <span><b>Windows sürücüsü hedef olamaz.</b> Sistem diski yedek hedefi listesinde çıkmaz.</span></li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.5 4.6L19 6.8"/></svg>
-          <span><b>Hiçbir yere veri gönderilmez.</b> İnternet bağlantısı kullanılmaz; her şey senin bilgisayarında ve cihazında kalır.</span></li>
-      </ul>
+      <div class="shot">
+        <img src="assets/shot-dark.png" alt="">
+        <div class="cap" data-tr="Koyu tema. Sistem temasını da izleyebilir." data-en="Dark theme. It can follow the system too.">Koyu tema. Sistem temasını da izleyebilir.</div>
+      </div>
+      <div class="shot">
+        <img src="assets/shot-backups.png" alt="">
+        <div class="cap" data-tr="Her çalışma sonucuyla birlikte listelenir." data-en="Every run is listed with its result.">Her çalışma sonucuyla birlikte listelenir.</div>
+      </div>
+      <div class="shot">
+        <img data-src-tr="assets/shot-add-tr.png" data-src-en="assets/shot-add-en.png" src="assets/shot-add-tr.png" alt="">
+        <div class="cap" data-tr="Hedef ekleme: tür seç, bağlantıyı sına, kaydet." data-en="Adding a destination: pick a kind, test the connection, save.">Hedef ekleme: tür seç, bağlantıyı sına, kaydet.</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============================ EKRANLAR ============================ -->
-<section id="ekranlar">
-  <div class="leke" aria-hidden="true"></div>
-  <div class="kap">
-    <div class="bolum-bas">
-      <div class="etiket">Ekranlar</div>
-      <h2>Material You, baştan çizildi</h2>
-      <p>Arayüzde hazır Windows denetimi kullanılmaz — butonlar, kartlar, anahtarlar, menüler,
-        hepsi uygulamanın kendi tasarım sistemiyle çizilir. Sağ üstteki düğmeyle temayı değiştir,
-        aşağıdaki ekranlar da onu takip etsin.</p>
-    </div>
-    <div class="galeri">
-      <figure>
-        <div class="ekran-cerceve"><img src="assets/ekran-cihazlar.png" loading="lazy" width="980" height="712"
-          alt="Cihazlar ekranı" data-ekran="cihazlar"></div>
-        <figcaption><b>Cihazlar.</b> Her cihaz kendi kartında: modu, kaynak sayısı, son yedeği,
-          aç/kapa anahtarı ve eylemleri. Altta o an takılı sürücüler.</figcaption>
-      </figure>
-      <figure>
-        <div class="ekran-cerceve"><img src="assets/ekran-ayarlar.png" loading="lazy" width="980" height="712"
-          alt="Ayarlar ekranı" data-ekran="ayarlar"></div>
-        <figcaption><b>Ayarlar.</b> Üyelik, hatırlatıcı, tema ve çalışma şekli tek sayfada.
-          Değişiklikler anında kaydedilir; “Kaydet” adımı yoktur.</figcaption>
-      </figure>
-      <figure>
-        <div class="ekran-cerceve"><img src="assets/ekran-giris.png" loading="lazy" width="520" height="702"
-          alt="Giriş ekranı" data-ekran="giris"></div>
-        <figcaption><b>Hesap.</b> Açılışta Google ile ya da e-postanla hesap oluşturursun.
-          Bir kez oluşturduktan sonra bu ekran bir daha çıkmaz — istersen hiç hesap
-          açmadan da devam edebilirsin.</figcaption>
-      </figure>
-      <figure>
-        <div class="ekran-cerceve"><img src="assets/ekran-cihaz-ekle.png" loading="lazy" width="640" height="846"
-          alt="Cihaz yetkilendirme ekranı"></div>
-        <figcaption><b>Cihaz ekleme.</b> Tek dikey akış: ad → sürücü → kaynaklar → mod → hedef.</figcaption>
-      </figure>
-      <figure>
-        <div class="ekran-cerceve"><img src="assets/ekran-kurulum.png" loading="lazy" width="600" height="636"
-          alt="Kurulum sihirbazı"></div>
-        <figcaption><b>Kurulum.</b> Üç anahtar ve tek bir birincil eylem. Yönetici hakkı istemez.</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- ============================ S.S.S. ============================ -->
-<section id="sss">
-  <div class="kap">
-    <div class="bolum-bas">
-      <div class="etiket">Sık sorulanlar</div>
-      <h2>Merak edilenler</h2>
-    </div>
-    <div class="sss">
-      <details open>
-        <summary>Yönetici hakkı gerekiyor mu?</summary>
-        <p>Hayır. Uygulama kendi kullanıcı klasörüne (<code>%LocalAppData%\Programs\UsbBackup</code>)
-          kurulur. Hiçbir sistem ayarı değiştirilmez.</p>
-      </details>
-      <details>
-        <summary>İnternet bağlantısı kullanıyor mu?</summary>
-        <p>Hayır. Uygulama hiçbir yere veri göndermez, güncelleme sunucusuna bağlanmaz.
-          Dosyaların bilgisayarınla cihazın arasında kalır.</p>
-      </details>
-      <details>
-        <summary>Yedeklerim özel bir biçimde mi saklanıyor?</summary>
-        <p>Hayır. Dosyalar cihaza olduğu gibi, klasör yapısı korunarak kopyalanır. Uygulama
-          olmadan da açabilir, kopyalayabilir, taşıyabilirsin. Bir yedeğin en önemli özelliği,
-          onu okumak için o programa muhtaç olmamandır.</p>
-      </details>
-      <details>
-        <summary>Yanlışlıkla dosyalarımı silebilir mi?</summary>
-        <p>Silme işlemi yalnızca cihazdaki kendi yedek klasöründe olur. Bilgisayardaki kaynak
-          klasörlere ve cihazın geri kalanına hiç dokunulmaz. Hedef klasör yolu iki ayrı yerde
-          doğrulanır: kullanıcı mutlak bir yol ya da <code>..\..</code> yazsa bile cihaz kökünün
-          altındaki bir alt klasöre indirgenir.</p>
-      </details>
-      <details>
-        <summary>Başkasının USB'si takılırsa ne olur?</summary>
-        <p>Hiçbir şey. Uygulama yalnızca kendi yazdığı gizli anahtar dosyasını taşıyan ve
-          bilgisayarda kayıtlı profille eşleşen cihazlara yedek alır. Diğerleri günlüğe not
-          düşülüp yok sayılır.</p>
-      </details>
-      <details>
-        <summary>Windows açılışında otomatik başlar mı?</summary>
-        <p>İstersen. Üç çalışma şeklinden birini seçersin: tepside beklesin, yalnızca cihaz
-          takılınca açılsın (arka planda hiçbir şey çalışmaz), ya da sadece elle açayım.</p>
-      </details>
-      <details>
-        <summary>Nasıl tamamen kaldırılır?</summary>
-        <p>Ayarlar → Tehlikeli bölge → “Kaldırmayı başlat”, ya da Windows'un Uygulamalar listesi.
-          Neyin silineceği önce listelenir; cihazdaki yedeklerin silinmesi ayrı bir seçenektir ve
-          varsayılan olarak kapalıdır.</p>
-      </details>
-      <details>
-        <summary>Yedek almayı unutursam ne olur?</summary>
-        <p>Uygulama hatırlatır. <b>Ayarlar → Hatırlatıcı</b>'dan bir aralık seçersin —
-          24 saat, 48 saat, 72 saat, 1 hafta, 2 hafta ya da 1 ay. Seçtiğin süre boyunca
-          bir cihaz yedeklenmediyse kısa bir bildirim gelir ve ana ekranda uyarı görünür.
-          İstemezsen “Kapalı” seçebilirsin.</p>
-      </details>
-      <details>
-        <summary>Ücretsiz sürümde ne eksik?</summary>
-        <p>Üç yedekleme modu: <b>Tam Yenile</b>, <b>Artımlı</b> ve <b>Ayna</b>. Bunların dışında
-          hiçbir şey kısıtlı değil — cihaz sayısı, dosya sayısı, otomatik algılama, hatırlatıcı,
-          tema, hepsi ücretsiz sürümde açıktır. Üyelik anahtarı çevrimdışı doğrulanır; uygulama
-          bunun için de internete bağlanmaz.</p>
-      </details>
-      <details id="nasil-alinir">
-        <summary>Öncelikli üyelik nasıl alınır?</summary>
-        <p>Üç adım:</p>
-        <ol>
-          <li>Uygulamayı kur, <b>Ayarlar &rarr; Üyelik</b>'i aç. Orada
-            <b>“Bu bilgisayarın kimliği”</b> yazar — <code>ABCD-EFGH</code> gibi kısa bir kod.
-            “Kimliği kopyala” düğmesiyle alabilirsin.</li>
-          <li>Bu kimliği bize ilet; sana o bilgisayara özel bir anahtar üretilir.</li>
-          <li>Gelen anahtarı aynı ekrandaki kutuya yapıştırıp <b>Etkinleştir</b>'e bas.
-            Beş modun tamamı açılır.</li>
-        </ol>
-        <p>Doğrulama tamamen çevrimdışıdır: anahtar girildikten sonra internet bağlantısı
-          gerekmez. <b>Satın alma sayfası henüz hazırlanıyor</b> — bu adım açıldığında anahtar
-          ödemenin ardından kendiliğinden gönderilecek.</p>
-      </details>
-      <details>
-        <summary>Uygulama internete bağlanıyor mu?</summary>
-        <p>Hayır. Uygulamanın içinde hiçbir ağ kodu yoktur: ne kullanım verisi, ne dosya adı,
-          ne de üyelik bilgisi gönderilir. Üyelik anahtarı bile çevrimdışı doğrulanır. Bunu
-          istersen bir güvenlik duvarıyla kendin de sınayabilirsin — uygulama bağlantı kurmaz.</p>
-      </details>
-      <details>
-        <summary>Kaynak kodu açık mı?</summary>
-        <p>Hayır, uygulamanın kaynak kodu kapalıdır. C# ve .NET 8 ile yazılmıştır ve tek dosya
-          hâlinde dağıtılır. Bir sorun bulursan
-          <a href="https://github.com/Ashura-Space/backup-app/issues" target="_blank" rel="noopener">GitHub
-          üzerinden bildirebilirsin</a>.</p>
-      </details>
-    </div>
-  </div>
-</section>
-
-<!-- ============================ İNDİR ============================ -->
+<!-- --------------------------------------------------------- İki sürüm -->
 <section id="indir">
-  <div class="kap">
-    <div class="cagri">
-      <h2>Bir kere kur, bir daha yedek almayı unutma</h2>
-      <p>Windows 10 ve 11 · 64 bit · Tek dosya · Ücretsiz sürüm</p>
-      <div class="eylemler">
-        <a class="btn btn-dolu" href="https://github.com/Ashura-Space/backup-app/releases/latest/download/UsbBackup.exe">
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11"/><path d="M7.4 10.4 12 15l4.6-4.6"/><path d="M5 19.5h14"/></svg>
-          UsbBackup.exe indir
-        </a>
-        <a class="btn btn-cerceve" href="https://github.com/Ashura-Space/backup-app/releases" target="_blank" rel="noopener">
-          Tüm sürümler
-        </a>
+  <div class="wrap">
+    <h2 data-tr="Hangisini indireyim?" data-en="Which one should I download?">Hangisini indireyim?</h2>
+    <p class="sub"
+       data-tr="İkisi de aynı yedekleme motorunu kullanır ve ikisi de ücretsizdir. Fark, hesap ve bulut tarafındadır. Aynı bilgisayara yan yana kurulmazlar."
+       data-en="Both use the same backup engine and both are free. The difference is accounts and cloud. They do not install side by side.">
+      İkisi de aynı yedekleme motorunu kullanır ve ikisi de ücretsizdir. Fark, hesap ve bulut tarafındadır. Aynı bilgisayara yan yana kurulmazlar.
+    </p>
+
+    <div class="grid g2" style="margin-top:24px">
+      <div class="card">
+        <h3>Backup App</h3>
+        <p class="small" data-tr="Google ile giriş yapabilir; adın, üyelik anahtarın, tema ve dil tercihin kendi Google Drive'ındaki gizli bir klasöre eşitlenir. Google Drive, OneDrive ve Dropbox hedefleri buradadır." data-en="Can sign in with Google; your name, membership key, theme and language sync to a hidden folder in your own Google Drive. Google Drive, OneDrive and Dropbox destinations live here.">Google ile giriş yapabilir; adın, üyelik anahtarın, tema ve dil tercihin kendi Google Drive'ındaki gizli bir klasöre eşitlenir. Google Drive, OneDrive ve Dropbox hedefleri buradadır.</p>
+        <p class="small" data-tr="Ağ trafiği: Google ve senin seçtiğin hedefler." data-en="Network use: Google and the destinations you choose.">Ağ trafiği: Google ve senin seçtiğin hedefler.</p>
+        <a class="btn" style="margin-top:8px" href="https://github.com/Ashura-Space/backup-app/releases/latest/download/BackupApp-Setup.exe" data-tr="İndir" data-en="Download">İndir</a>
+      </div>
+      <div class="card">
+        <h3>Backup App Lite</h3>
+        <p class="small" data-tr="Hesap yok, Google yok, bulut sağlayıcısı yok. Yalnızca üyelik anahtarı. USB, ağ klasörü, WebDAV, SFTP ve S3 hedefleri çalışır." data-en="No account, no Google, no cloud providers. Just the membership key. USB, network folder, WebDAV, SFTP and S3 work.">Hesap yok, Google yok, bulut sağlayıcısı yok. Yalnızca üyelik anahtarı. USB, ağ klasörü, WebDAV, SFTP ve S3 hedefleri çalışır.</p>
+        <p class="small" data-tr="Ağ trafiği: yalnızca senin kurduğun hedefe. Hepsi yerelse internete hiç çıkmaz." data-en="Network use: only the destination you set up. If they are all local it never goes online.">Ağ trafiği: yalnızca senin kurduğun hedefe. Hepsi yerelse internete hiç çıkmaz.</p>
+        <a class="btn second" style="margin-top:8px" href="https://github.com/Ashura-Space/backup-app/releases/latest/download/BackupApp-Lite-Setup.exe" data-tr="İndir" data-en="Download">İndir</a>
+      </div>
+    </div>
+
+    <p class="note" style="margin-top:18px">
+      <span data-tr="Bağımsız kurtarma aracı ayrıca indirilebilir:" data-en="The standalone recovery tool can be downloaded separately:">Bağımsız kurtarma aracı ayrıca indirilebilir:</span>
+      <a href="https://github.com/Ashura-Space/backup-app/releases/latest/download/ubk-recover.exe">ubk-recover.exe</a>
+    </p>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------- Üyelik -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Ücretsiz başla, gerekirse büyüt" data-en="Start free, grow into it if you need to">Ücretsiz başla, gerekirse büyüt</h2>
+    <div class="grid g2" style="margin-top:22px">
+      <div class="card">
+        <h3 data-tr="Ücretsiz" data-en="Free">Ücretsiz</h3>
+        <p class="small" data-tr="Sekiz hedef türü, uçtan uca şifreleme, geri yükleme, kurtarma aracı, zamanlama, hatırlatıcı ve Defender taraması. Süre sınırı yok, dosya sınırı yok." data-en="All eight destination kinds, end-to-end encryption, restore, the recovery tool, scheduling, reminders and the Defender scan. No time limit, no file limit.">Sekiz hedef türü, uçtan uca şifreleme, geri yükleme, kurtarma aracı, zamanlama, hatırlatıcı ve Defender taraması. Süre sınırı yok, dosya sınırı yok.</p>
+        <p class="small" data-tr="Yedekleme modu: Sadece Ekle ve Sürümlü." data-en="Backup modes: Add Only and Versioned.">Yedekleme modu: Sadece Ekle ve Sürümlü.</p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Üyelik" data-en="Membership">Üyelik</h3>
+        <p class="small" data-tr="Artımlı, Ayna ve Tam Yenile modları; USB Guard'ın kalan üç koruması. Anahtar imzalıdır ve Ayarlar > Güvenlik bölümüne yapıştırılır." data-en="Incremental, Mirror and Full Refresh; the other three USB Guard protections. The key is signed and pasted under Settings > Security.">Artımlı, Ayna ve Tam Yenile modları; USB Guard'ın kalan üç koruması. Anahtar imzalıdır ve Ayarlar &gt; Güvenlik bölümüne yapıştırılır.</p>
       </div>
     </div>
   </div>
 </section>
+
+<!-- ---------------------------------------------------------------- SSS -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Sık sorulanlar" data-en="Questions people ask">Sık sorulanlar</h2>
+    <div style="margin-top:20px">
+      <details>
+        <summary data-tr="Verilerim bir yere gönderiliyor mu?" data-en="Is my data sent anywhere?">Verilerim bir yere gönderiliyor mu?</summary>
+        <p data-tr="Yalnızca senin kurduğun hedefe. Bizim sunucumuz yok. Google ile giriş yaparsan adın, üyelik anahtarın, tema ve dil tercihin senin kendi Drive'ındaki gizli klasöre gider; dosyaların ve cihaz listen gitmez." data-en="Only to the destination you set up. We have no server. If you sign in with Google, your name, membership key, theme and language go to a hidden folder in your own Drive; your files and device list do not.">Yalnızca senin kurduğun hedefe. Bizim sunucumuz yok. Google ile giriş yaparsan adın, üyelik anahtarın, tema ve dil tercihin senin kendi Drive'ındaki gizli klasöre gider; dosyaların ve cihaz listen gitmez.</p>
+      </details>
+      <details>
+        <summary data-tr="Parolamı unutursam ne olur?" data-en="What if I forget the passphrase?">Parolamı unutursam ne olur?</summary>
+        <p data-tr="Kurtarma anahtarınla açarsın; kurulumda bir kez gösterilir. İkisi de kaybolursa yedek okunamaz. Bu bir kusur değil, uçtan uca şifrelemenin tanımıdır ve kurulumda böyle söylenir." data-en="You open it with the recovery key, shown once during setup. If both are lost the backup cannot be read. That is not a flaw; it is the definition of end-to-end encryption, and setup says so.">Kurtarma anahtarınla açarsın; kurulumda bir kez gösterilir. İkisi de kaybolursa yedek okunamaz. Bu bir kusur değil, uçtan uca şifrelemenin tanımıdır ve kurulumda böyle söylenir.</p>
+      </details>
+      <details>
+        <summary data-tr="Yönetici hakkı gerekiyor mu?" data-en="Does it need administrator rights?">Yönetici hakkı gerekiyor mu?</summary>
+        <p data-tr="Hayır. Kurulum da çalışma da kullanıcı hesabında olur. USB Guard'ın engelleme değil koruma yapmasının sebebi de budur." data-en="No. Both installation and operation stay inside your user account. That is also why USB Guard protects and detects rather than blocks.">Hayır. Kurulum da çalışma da kullanıcı hesabında olur. USB Guard'ın engelleme değil koruma yapmasının sebebi de budur.</p>
+      </details>
+      <details>
+        <summary data-tr="Yedeğim gerçekten geri gelir mi?" data-en="Will my backup really come back?">Yedeğim gerçekten geri gelir mi?</summary>
+        <p data-tr="Uygulamada geri yükleme ekranı var. Ayrıca uygulamadan tamamen bağımsız bir kurtarma aracı geliyor: yedek klasörü ve parola yeterli. Depo formatı belgelenmiştir, isteyen kendi çözücüsünü yazabilir." data-en="The app has a restore screen. A recovery tool that is completely independent of the app also ships with it: the backup folder and the passphrase are enough. The format is documented, so anyone can write their own decoder.">Uygulamada geri yükleme ekranı var. Ayrıca uygulamadan tamamen bağımsız bir kurtarma aracı geliyor: yedek klasörü ve parola yeterli. Depo formatı belgelenmiştir, isteyen kendi çözücüsünü yazabilir.</p>
+      </details>
+      <details>
+        <summary data-tr="Kaldırmak kolay mı?" data-en="Is it easy to remove?">Kaldırmak kolay mı?</summary>
+        <p data-tr="Ayarlar içinden tek adımda kaldırılır: başlangıç kaydı, zamanlanmış görev, kısayollar, ayarlar ve cihaz anahtarları temizlenir. Yedeklenen dosyalara istersen dokunulmaz." data-en="One step from Settings: the startup entry, scheduled task, shortcuts, settings and device keys are cleaned up. Your backed up files are left alone unless you say otherwise.">Ayarlar içinden tek adımda kaldırılır: başlangıç kaydı, zamanlanmış görev, kısayollar, ayarlar ve cihaz anahtarları temizlenir. Yedeklenen dosyalara istersen dokunulmaz.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <div class="wrap" style="text-align:center">
+    <h2 data-tr="Bir kez kur, bir daha unutma" data-en="Install it once, never forget again">Bir kez kur, bir daha unutma</h2>
+    <div class="dl" style="justify-content:center">
+      <a class="btn" href="https://github.com/Ashura-Space/backup-app/releases/latest/download/BackupApp-Setup.exe" data-tr="Backup App indir" data-en="Download Backup App">Backup App indir</a>
+      <a class="btn second" href="https://github.com/Ashura-Space/backup-app/releases/latest/download/BackupApp-Lite-Setup.exe" data-tr="Lite sürümü indir" data-en="Download Lite">Lite sürümü indir</a>
+    </div>
+  </div>
+</section>
+
+</main>
 
 <footer>
-  <div class="kap alt">
-    <p>Backup App · C# ve .NET 8 ile yazıldı · Windows 10 ve 11 için</p>
-    <nav>
-      <a href="#indir">İndir</a>
-      <a href="https://github.com/Ashura-Space/backup-app/releases" target="_blank" rel="noopener">Sürümler</a>
-      <a href="https://github.com/Ashura-Space/backup-app/issues" target="_blank" rel="noopener">Sorun bildir</a>
-    </nav>
+  <div class="wrap">
+    <p>Backup App 2.0 · <a href="https://github.com/Ashura-Space/backup-app">GitHub</a> · <a href="FORMAT.md">FORMAT.md</a> · <a href="SECURITY.md">SECURITY.md</a> · <a href="AUDIT.md">AUDIT.md</a></p>
+    <p class="small" data-tr="Bu sayfa dışarıdan hiçbir şey yüklemez: yazı tipi, betik ve ölçüm dahil. Seni kimseye tanıtmaz." data-en="This page loads nothing from anywhere else: no fonts, no scripts, no analytics. It introduces you to no one.">Bu sayfa dışarıdan hiçbir şey yüklemez: yazı tipi, betik ve ölçüm dahil. Seni kimseye tanıtmaz.</p>
   </div>
 </footer>
 
 <script>
 /*
-  Tek betik: tema anahtari. Uygulamadaki tema ozelliginin web karsiligi —
-  secim tarayicida saklanir, ekran goruntuleri de temayla birlikte degisir.
-  Disaridan hicbir sey yuklenmez.
+  Dil değiştirici. Metinler sayfanın içinde durur (data-tr / data-en); hiçbir
+  şey sonradan indirilmez, bu yüzden sayfa yavaş bağlantıda da tek seferde
+  gelir ve betik engellense bile Türkçe hâliyle okunur.
 */
 (function () {
-  var kok = document.documentElement;
-  var dugme = document.getElementById('tema');
+  var KEY = "backupapp-lang";
+  var buttons = document.querySelectorAll(".langs button");
 
-  var ekranlar = {
-    acik: {
-      cihazlar: 'assets/ekran-cihazlar.png',
-      ayarlar:  'assets/ekran-ayarlar.png',
-      giris:    'assets/ekran-giris.png'
-    },
-    koyu: {
-      cihazlar: 'assets/ekran-koyu.png',
-      ayarlar:  'assets/ekran-koyu-ayarlar.png',
-      giris:    'assets/ekran-koyu-giris.png'
-    }
-  };
+  function apply(lang) {
+    document.documentElement.lang = lang;
 
-  function uygula(tema) {
-    if (tema === 'koyu') kok.setAttribute('data-tema', 'koyu');
-    else kok.removeAttribute('data-tema');
+    document.querySelectorAll("[data-tr]").forEach(function (el) {
+      var text = el.getAttribute("data-" + lang);
+      if (text !== null) el.textContent = text;
+    });
 
-    var kume = ekranlar[tema === 'koyu' ? 'koyu' : 'acik'];
-    var hepsi = document.querySelectorAll('img[data-ekran]');
-    for (var i = 0; i < hepsi.length; i++) {
-      var ad = hepsi[i].getAttribute('data-ekran');
-      if (kume[ad]) hepsi[i].src = kume[ad];
-    }
-    dugme.setAttribute('aria-label', tema === 'koyu' ? 'Açık temaya geç' : 'Koyu temaya geç');
+    document.querySelectorAll("[data-src-tr]").forEach(function (img) {
+      var src = img.getAttribute("data-src-" + lang);
+      if (src) img.src = src;
+    });
+
+    buttons.forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+    });
+
+    try { localStorage.setItem(KEY, lang); } catch (e) { /* özel pencere */ }
   }
 
-  // Kayitli tercih yoksa isletim sisteminin tercihine uyulur.
-  var kayitli = null;
-  try { kayitli = localStorage.getItem('tema'); } catch (e) {}
-  var sistemKoyu = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  uygula(kayitli || (sistemKoyu ? 'koyu' : 'acik'));
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) { /* özel pencere */ }
 
-  // "Nasil alinir?" baglantisi S.S.S. maddesini yalnizca kaydirmakla kalmaz, acar da.
-  function acHedef() {
-    if (!location.hash || location.hash.length < 2) return;
-    var hedef = null;
-    try { hedef = document.querySelector(location.hash); } catch (e) { return; }
-    if (hedef && hedef.tagName === 'DETAILS') hedef.open = true;
-  }
-  window.addEventListener('hashchange', acHedef);
-  acHedef();
+  // Kayıtlı seçim yoksa tarayıcının diline bakılır. Türkçe bir tarayıcı
+  // Türkçe açar; kalan herkes İngilizce görür.
+  var guess = (navigator.language || "en").toLowerCase().indexOf("tr") === 0 ? "tr" : "en";
+  apply(saved || guess);
 
-  dugme.addEventListener('click', function () {
-    var yeni = kok.getAttribute('data-tema') === 'koyu' ? 'acik' : 'koyu';
-    uygula(yeni);
-    try { localStorage.setItem('tema', yeni); } catch (e) {}
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () { apply(b.dataset.lang); });
   });
 })();
 </script>
