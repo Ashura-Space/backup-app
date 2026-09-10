@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="tr" data-title-tr="Belgeler — Backup App" data-title-en="Docs — Backup App">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Belgeler — Backup App</title>
+<meta name="description" content="Yedekleme modları, depo biçimi ve bağımsız kurtarma aracının kullanımı.">
+<link rel="canonical" href="https://ashura-space.github.io/backup-app/belgeler.html">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<meta property="og:site_name" content="Backup App">
+<meta property="og:title" content="Belgeler — Backup App">
+<meta property="og:description" content="Yedekleme modları, depo biçimi ve bağımsız kurtarma aracının kullanımı.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ashura-space.github.io/backup-app/belgeler.html">
+<meta property="og:image" content="https://ashura-space.github.io/backup-app/assets/shot-home-en.png">
+<meta property="og:image:width" content="1260">
+<meta property="og:image:height" content="712">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#2563eb">
+</head>
+<body>
+
+<a class="skip" href="#top" data-tr="İçeriğe geç" data-en="Skip to content">İçeriğe geç</a>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><img src="assets/logo.svg" alt=""><span>Backup App</span></a>
+    <nav class="menu">
+      <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a>
+      <a href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+      <a href="guvenlik.html" data-tr="Güvenlik" data-en="Security">Güvenlik</a>
+      <a href="belgeler.html" data-tr="Belgeler" data-en="Docs">Belgeler</a>
+      <a href="sss.html" data-tr="SSS" data-en="FAQ">SSS</a>
+      <a href="surumler.html" data-tr="Sürümler" data-en="Releases">Sürümler</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="langs" role="group" aria-label="Dil / Language">
+      <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="ghost" href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+  </div>
+  <nav class="menu-narrow">
+      <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a>
+      <a href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+      <a href="guvenlik.html" data-tr="Güvenlik" data-en="Security">Güvenlik</a>
+      <a href="belgeler.html" data-tr="Belgeler" data-en="Docs">Belgeler</a>
+      <a href="sss.html" data-tr="SSS" data-en="FAQ">SSS</a>
+      <a href="surumler.html" data-tr="Sürümler" data-en="Releases">Sürümler</a>
+    </nav>
+</header>
+
+<main id="top">
+<div class="wrap crumbs">
+  <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a> ›
+  <span data-tr="Belgeler" data-en="Docs">Belgeler</span>
+</div>
+
+<section class="tight">
+  <div class="wrap">
+    <h1 data-tr="Belgeler" data-en="Docs">Belgeler</h1>
+    <p class="lead" data-tr="Uygulamanın nasıl çalıştığı, deposunun biçimi ve uygulama olmadan yedeğe nasıl ulaşacağın." data-en="How the app works, the format of its repository, and how to reach a backup without the app.">Uygulamanın nasıl çalıştığı, deposunun biçimi ve uygulama olmadan yedeğe nasıl ulaşacağın.</p>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------- Modlar -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Her hedef için ayrı davranış" data-en="A different behaviour for every destination">Her hedef için ayrı davranış</h2>
+    <p class="sub"
+       data-tr="Beş mod var. Hangisinin ne yaptığı arayüzde tek cümleyle yazar; belgeye bakman gerekmez."
+       data-en="Five modes. What each one does is written in one sentence in the app; you never need the manual.">
+      Beş mod var. Hangisinin ne yaptığı arayüzde tek cümleyle yazar; belgeye bakman gerekmez.
+    </p>
+
+    <div class="card" style="margin-top:22px">
+      <table>
+        <tr><th data-tr="Mod" data-en="Mode">Mod</th><th data-tr="Ne yapar" data-en="What it does">Ne yapar</th><th></th></tr>
+        <tr><td data-tr="Sadece Ekle" data-en="Add Only">Sadece Ekle</td><td class="small" data-tr="Yalnızca yeni dosyalar eklenir; var olana dokunulmaz." data-en="Only new files are added; existing ones are untouched.">Yalnızca yeni dosyalar eklenir; var olana dokunulmaz.</td><td><span class="pill ok" data-tr="Ücretsiz" data-en="Free">Ücretsiz</span></td></tr>
+        <tr><td data-tr="Sürümlü" data-en="Versioned">Sürümlü</td><td class="small" data-tr="Her çalışma kendi tarihli klasörüne gider; geçmiş korunur." data-en="Each run goes to its own dated folder; history is kept.">Her çalışma kendi tarihli klasörüne gider; geçmiş korunur.</td><td><span class="pill ok" data-tr="Ücretsiz" data-en="Free">Ücretsiz</span></td></tr>
+        <tr><td data-tr="Artımlı" data-en="Incremental">Artımlı</td><td class="small" data-tr="Yeni ve değişen dosyalar eklenir; hiçbir şey silinmez." data-en="New and changed files are added; nothing is deleted.">Yeni ve değişen dosyalar eklenir; hiçbir şey silinmez.</td><td><span class="pill" data-tr="Üyelik" data-en="Membership">Üyelik</span></td></tr>
+        <tr><td data-tr="Ayna" data-en="Mirror">Ayna</td><td class="small" data-tr="Hedef kaynakla birebir olur; kaynakta silinen hedeften de silinir." data-en="The destination matches the source exactly; deletions are mirrored.">Hedef kaynakla birebir olur; kaynakta silinen hedeften de silinir.</td><td><span class="pill" data-tr="Üyelik" data-en="Membership">Üyelik</span></td></tr>
+        <tr><td data-tr="Tam Yenile" data-en="Full Refresh">Tam Yenile</td><td class="small" data-tr="Eski yedek silinir, kaynak baştan kopyalanır." data-en="The old backup is cleared and the source is copied fresh.">Eski yedek silinir, kaynak baştan kopyalanır.</td><td><span class="pill" data-tr="Üyelik" data-en="Membership">Üyelik</span></td></tr>
+      </table>
+    </div>
+
+    <div class="shot" style="margin-top:24px">
+      <img src="assets/shot-rules.png" alt="">
+      <div class="cap" data-tr="Kurallar sayfası: mod, silme koruması ve USB Guard tek yerde." data-en="Rules: mode, deletion protection and USB Guard in one place.">Kurallar sayfası: mod, silme koruması ve USB Guard tek yerde.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 data-tr="Kurtarma aracı nasıl kullanılır" data-en="How to use the recovery tool">Kurtarma aracı nasıl kullanılır</h2>
+    <p class="sub" data-tr="ubk-recover.exe kurulum istemez, tek dosyadır ve yalnızca okur — bir yedeği asla değiştirmez." data-en="ubk-recover.exe needs no installation, is a single file, and only reads — it never modifies a backup.">ubk-recover.exe kurulum istemez, tek dosyadır ve yalnızca okur — bir yedeği asla değiştirmez.</p>
+    <pre><code>ubk-recover.exe list  --repo D:\Backup
+ubk-recover.exe fetch --repo D:\Backup --out C:\Kurtarilan</code></pre>
+    <p class="small" data-tr="Parola sorulduğunda ekrana yazılmaz. Yanlış parolada &#39;açılamadı&#39; der ve durur." data-en="The passphrase is not echoed. A wrong one gives &#39;could not open&#39; and stops.">Parola sorulduğunda ekrana yazılmaz. Yanlış parolada 'açılamadı' der ve durur.</p>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <div class="wrap">
+    <h2 data-tr="Teknik belgeler" data-en="Technical documents">Teknik belgeler</h2>
+    <div class="grid g3" style="margin-top:20px">
+      <div class="card">
+        <h3>FORMAT.md</h3>
+        <p class="small" data-tr="Depo biçimi: dosya başlığı, parça düzeni, iki yuvalı manifest, kontrol noktaları. Kendi aracını yazacak kadar ayrıntılı." data-en="The repository format: file header, chunk layout, the two-slot manifest, checkpoints. Detailed enough to write your own tool.">Depo biçimi: dosya başlığı, parça düzeni, iki yuvalı manifest, kontrol noktaları. Kendi aracını yazacak kadar ayrıntılı.</p>
+        <a href="FORMAT.md" data-tr="Oku →" data-en="Read →">Oku →</a>
+      </div>
+      <div class="card">
+        <h3>SECURITY.md</h3>
+        <p class="small" data-tr="Anahtar hiyerarşisi, parola türetme, yuvalar ve emanet anahtarı; tehdit modeli." data-en="Key hierarchy, passphrase derivation, slots and the escrow key; the threat model.">Anahtar hiyerarşisi, parola türetme, yuvalar ve emanet anahtarı; tehdit modeli.</p>
+        <a href="SECURITY.md" data-tr="Oku →" data-en="Read →">Oku →</a>
+      </div>
+      <div class="card">
+        <h3>AUDIT.md</h3>
+        <p class="small" data-tr="Uygulamaya yapılan saldırı denemeleri ve sonuçları; bulunan açıklar ve nasıl kapatıldıkları." data-en="The attacks run against the app and their results; what was found and how it was closed.">Uygulamaya yapılan saldırı denemeleri ve sonuçları; bulunan açıklar ve nasıl kapatıldıkları.</p>
+        <a href="AUDIT.md" data-tr="Oku →" data-en="Read →">Oku →</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav>
+      <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a>
+      <a href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+      <a href="guvenlik.html" data-tr="Güvenlik" data-en="Security">Güvenlik</a>
+      <a href="belgeler.html" data-tr="Belgeler" data-en="Docs">Belgeler</a>
+      <a href="sss.html" data-tr="SSS" data-en="FAQ">SSS</a>
+      <a href="surumler.html" data-tr="Sürümler" data-en="Releases">Sürümler</a>
+      <a href="gizlilik.html" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a>
+      <a href="https://github.com/Ashura-Space/backup-app">GitHub</a>
+    </nav>
+    <p class="small">Backup App 2.0 · <span data-tr="Ücretsiz ve açık formatlı." data-en="Free, with an open format.">Ücretsiz ve açık formatlı.</span></p>
+    <p class="small" data-tr="Bu site dışarıdan hiçbir şey yüklemez: yazı tipi, betik ve ölçüm dahil. Seni kimseye tanıtmaz." data-en="This site loads nothing from anywhere else: no fonts, no scripts, no analytics. It introduces you to no one.">Bu site dışarıdan hiçbir şey yüklemez: yazı tipi, betik ve ölçüm dahil. Seni kimseye tanıtmaz.</p>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+
+</body>
+</html>

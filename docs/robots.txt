@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ashura-space.github.io/backup-app/sitemap.xml

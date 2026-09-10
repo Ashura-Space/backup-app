@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="tr" data-title-tr="Güvenlik — Backup App" data-title-en="Security — Backup App">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Güvenlik — Backup App</title>
+<meta name="description" content="Backup App neyi korur, neyi koruyamaz: uçtan uca şifreleme, yalnızca ekleme kipi, USB Guard, denetim raporu.">
+<link rel="canonical" href="https://ashura-space.github.io/backup-app/guvenlik.html">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<meta property="og:site_name" content="Backup App">
+<meta property="og:title" content="Güvenlik — Backup App">
+<meta property="og:description" content="Backup App neyi korur, neyi koruyamaz: uçtan uca şifreleme, yalnızca ekleme kipi, USB Guard, denetim raporu.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ashura-space.github.io/backup-app/guvenlik.html">
+<meta property="og:image" content="https://ashura-space.github.io/backup-app/assets/shot-home-en.png">
+<meta property="og:image:width" content="1260">
+<meta property="og:image:height" content="712">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#2563eb">
+</head>
+<body>
+
+<a class="skip" href="#top" data-tr="İçeriğe geç" data-en="Skip to content">İçeriğe geç</a>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><img src="assets/logo.svg" alt=""><span>Backup App</span></a>
+    <nav class="menu">
+      <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a>
+      <a href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+      <a href="guvenlik.html" data-tr="Güvenlik" data-en="Security">Güvenlik</a>
+      <a href="belgeler.html" data-tr="Belgeler" data-en="Docs">Belgeler</a>
+      <a href="sss.html" data-tr="SSS" data-en="FAQ">SSS</a>
+      <a href="surumler.html" data-tr="Sürümler" data-en="Releases">Sürümler</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="langs" role="group" aria-label="Dil / Language">
+      <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="ghost" href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+  </div>
+  <nav class="menu-narrow">
+      <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a>
+      <a href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+      <a href="guvenlik.html" data-tr="Güvenlik" data-en="Security">Güvenlik</a>
+      <a href="belgeler.html" data-tr="Belgeler" data-en="Docs">Belgeler</a>
+      <a href="sss.html" data-tr="SSS" data-en="FAQ">SSS</a>
+      <a href="surumler.html" data-tr="Sürümler" data-en="Releases">Sürümler</a>
+    </nav>
+</header>
+
+<main id="top">
+<div class="wrap crumbs">
+  <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a> ›
+  <span data-tr="Güvenlik" data-en="Security">Güvenlik</span>
+</div>
+
+<section class="tight">
+  <div class="wrap">
+    <h1 data-tr="Güvenlik" data-en="Security">Güvenlik</h1>
+    <p class="lead" data-tr="Bir yedekleme uygulaması verinin en toplu hâlini elinde tutar. O yüzden neyi koruduğumuzu da, neyi koruyamadığımızı da açıkça yazıyoruz." data-en="A backup app holds your data in its most concentrated form. So we write down both what we protect and what we cannot.">Bir yedekleme uygulaması verinin en toplu hâlini elinde tutar. O yüzden neyi koruduğumuzu da, neyi koruyamadığımızı da açıkça yazıyoruz.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 data-tr="Neyi koruruz" data-en="What we protect">Neyi koruruz</h2>
+    <div class="grid g2" style="margin-top:20px">
+      <div class="card">
+        <h3 data-tr="Belleği bulan kişi" data-en="Whoever finds the stick">Belleği bulan kişi</h3>
+        <p class="small" data-tr="Şifreli bir hedefte dosya içerikleri AES-256-GCM ile kapalıdır; dosya adları ve klasör yapısı da gizlenir. Parolayı bilmeden okunacak hiçbir şey yoktur." data-en="On an encrypted destination the contents are sealed with AES-256-GCM, and file names and folder structure are hidden too. Without the passphrase there is nothing to read.">Şifreli bir hedefte dosya içerikleri AES-256-GCM ile kapalıdır; dosya adları ve klasör yapısı da gizlenir. Parolayı bilmeden okunacak hiçbir şey yoktur.</p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Bulut sağlayıcısı ve biz" data-en="The cloud provider, and us">Bulut sağlayıcısı ve biz</h3>
+        <p class="small" data-tr="Şifreleme senin bilgisayarında olur. Parola bilgisayarından çıkmaz, hiçbir sunucuya gönderilmez. Bizim sunucumuz zaten yok — yedeklerin doğrudan senin seçtiğin hedefe gider." data-en="Encryption happens on your computer. The passphrase never leaves it and is sent to no server. We have no server at all — backups go straight to the destination you chose.">Şifreleme senin bilgisayarında olur. Parola bilgisayarından çıkmaz, hiçbir sunucuya gönderilmez. Bizim sunucumuz zaten yok — yedeklerin doğrudan senin seçtiğin hedefe gider.</p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Sessiz bozulma" data-en="Silent corruption">Sessiz bozulma</h3>
+        <p class="small" data-tr="Her parça kendi doğrulama etiketini taşır. Tek bir bit değişirse çözme reddedilir: bozuk veri sana sağlam gibi verilmez." data-en="Every chunk carries its own authentication tag. If a single bit changes, decryption is refused: damaged data is never handed back as if it were intact.">Her parça kendi doğrulama etiketini taşır. Tek bir bit değişirse çözme reddedilir: bozuk veri sana sağlam gibi verilmez.</p>
+      </div>
+      <div class="card">
+        <h3 data-tr="Fidye yazılımı" data-en="Ransomware">Fidye yazılımı</h3>
+        <p class="small" data-tr="&#39;Yalnızca ekleme&#39; kipinde yedek silinmez, üzerine yazılmaz. Silinen dosyalar mezar taşıyla işaretlenir; geri dönmek istediğinde oradadır." data-en="In append-only mode a backup is never deleted or overwritten. Deleted files are marked with a tombstone; when you want to go back, it is there.">'Yalnızca ekleme' kipinde yedek silinmez, üzerine yazılmaz. Silinen dosyalar mezar taşıyla işaretlenir; geri dönmek istediğinde oradadır.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- --------------------------------------------------------- Açık format -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="Uygulama ortadan kalksa bile verine ulaşırsın" data-en="You can reach your data even if the app disappears">Uygulama ortadan kalksa bile verine ulaşırsın</h2>
+    <p class="sub"
+       data-tr="Bir yedekleme aracına güvenmenin en zor yanı budur: ya bir gün program çalışmazsa? Depo formatının tamamı belgelenmiştir ve yanında, uygulamayla hiçbir kod paylaşmayan tek dosyalık bir kurtarma aracı gelir. Yedek klasörü ve parola yeter."
+       data-en="This is the hardest part of trusting a backup tool: what if the program stops working one day? The whole repository format is documented, and a single-file recovery tool ships with it that shares no code with the app. The backup folder and the passphrase are enough.">
+      Bir yedekleme aracına güvenmenin en zor yanı budur: ya bir gün program çalışmazsa? Depo formatının tamamı belgelenmiştir ve yanında, uygulamayla hiçbir kod paylaşmayan tek dosyalık bir kurtarma aracı gelir. Yedek klasörü ve parola yeter.
+    </p>
+
+<pre>ubk-recover list    &lt;<span data-tr="yedek-klasörü" data-en="backup-folder">yedek-klasörü</span>&gt;
+ubk-recover verify  &lt;<span data-tr="yedek-klasörü" data-en="backup-folder">yedek-klasörü</span>&gt;
+ubk-recover restore &lt;<span data-tr="yedek-klasörü" data-en="backup-folder">yedek-klasörü</span>&gt; &lt;<span data-tr="hedef" data-en="destination">hedef</span>&gt;</pre>
+
+    <p class="small"
+       data-tr="Dizin bozulursa araç onu dosyaların kendi başlıklarından yeniden kurar. Biçimin tamamı FORMAT.md içinde yazılıdır; isteyen kendi çözücüsünü yazabilir."
+       data-en="If the index is damaged the tool rebuilds it from the files themselves. The whole format is written down in FORMAT.md; anyone can write their own decoder.">
+      Dizin bozulursa araç onu dosyaların kendi başlıklarından yeniden kurar. Biçimin tamamı FORMAT.md içinde yazılıdır; isteyen kendi çözücüsünü yazabilir.
+    </p>
+    <p><a href="FORMAT.md">FORMAT.md</a> · <a href="SECURITY.md" data-tr="Güvenlik notları" data-en="Security notes">Güvenlik notları</a> · <a href="AUDIT.md" data-tr="Denetim raporu" data-en="Audit report">Denetim raporu</a></p>
+  </div>
+</section>
+
+<!-- ---------------------------------------------------------- USB Guard -->
+<section>
+  <div class="wrap">
+    <h2 data-tr="USB Guard: dört şey yapar, bir şeyi yapamaz" data-en="USB Guard: four things it does, one it cannot">USB Guard: dört şey yapar, bir şeyi yapamaz</h2>
+    <div class="grid g4" style="margin-top:22px">
+      <div class="card"><h3 data-tr="AutoPlay'i kapatır" data-en="Turns AutoPlay off">AutoPlay'i kapatır</h3><p class="small" data-tr="USB kötü yazılımı en çok böyle yayılır." data-en="This is how most USB malware spreads.">USB kötü yazılımı en çok böyle yayılır.</p></div>
+      <div class="card"><h3 data-tr="Defender ile tarar" data-en="Scans with Defender">Defender ile tarar</h3><p class="small" data-tr="Bir şey bulunursa yedekleme başlamaz." data-en="If something is found the backup does not start.">Bir şey bulunursa yedekleme başlamaz.</p></div>
+      <div class="card"><h3 data-tr="Yabancı yazmayı görür" data-en="Notices foreign writes">Yabancı yazmayı görür</h3><p class="small" data-tr="Bizim dışımızda yazan olursa haber verir." data-en="Tells you if something other than us writes.">Bizim dışımızda yazan olursa haber verir.</p></div>
+      <div class="card"><h3 data-tr="Değişikliği söyler" data-en="Reports changes">Değişikliği söyler</h3><p class="small" data-tr="Cihazda ne eklenmiş, ne değişmiş, ne silinmiş." data-en="What was added, changed or removed on the device.">Cihazda ne eklenmiş, ne değişmiş, ne silinmiş.</p></div>
+    </div>
+    <p class="small" style="margin-top:16px">
+      <span class="pill warn" data-tr="Dürüstlük notu" data-en="Honesty note">Dürüstlük notu</span>
+      <span data-tr=" Bu uygulama başka bir programın USB'ni okumasını engelleyemez. Bunun için çekirdek sürücüsü ve yönetici hakkı gerekir; uygulama yönetici hakkı istemez. Koruma ve tespit yapar, engelleme yapmaz — arayüzde de böyle yazar."
+            data-en=" This app cannot stop another program from reading your USB device. That needs a kernel driver and administrator rights, and the app asks for neither. It protects and detects; it does not block — and it says so in the interface."> Bu uygulama başka bir programın USB'ni okumasını engelleyemez. Bunun için çekirdek sürücüsü ve yönetici hakkı gerekir; uygulama yönetici hakkı istemez. Koruma ve tespit yapar, engelleme yapmaz — arayüzde de böyle yazar.</span>
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 data-tr="Neyi koruyamayız" data-en="What we cannot protect">Neyi koruyamayız</h2>
+    <ul>
+      <li data-tr="Bilgisayarında yönetici hakkıyla çalışan bir zararlıyı. O, uygulamanın kendisini de değiştirebilir." data-en="Malware already running on your computer with administrator rights. It can change the app itself.">Bilgisayarında yönetici hakkıyla çalışan bir zararlıyı. O, uygulamanın kendisini de değiştirebilir.</li>
+      <li data-tr="Başka bir programın USB belleğini okumasını. Bunu engellemek çekirdek sürücüsü ve yönetici hakkı ister; uygulama ikisini de istemiyor." data-en="Another program reading your USB stick. Blocking that needs a kernel driver and administrator rights; the app asks for neither.">Başka bir programın USB belleğini okumasını. Bunu engellemek çekirdek sürücüsü ve yönetici hakkı ister; uygulama ikisini de istemiyor.</li>
+      <li data-tr="Unuttuğun bir parolayı. Kurtarma anahtarını da kaybettiysen o yedek açılmaz — bu bir eksiklik değil, şifrelemenin ta kendisidir." data-en="A passphrase you forgot. If the recovery key is gone too, that backup cannot be opened — that is not a shortcoming, that is what encryption is.">Unuttuğun bir parolayı. Kurtarma anahtarını da kaybettiysen o yedek açılmaz — bu bir eksiklik değil, şifrelemenin ta kendisidir.</li>
+      <li data-tr="Hedefin kendisinin kaybolmasını. Tek bir hedefe güvenme; en az iki yer kullan, biri evden uzakta olsun." data-en="The destination itself disappearing. Do not trust a single destination; use at least two, one of them away from home.">Hedefin kendisinin kaybolmasını. Tek bir hedefe güvenme; en az iki yer kullan, biri evden uzakta olsun.</li>
+    </ul>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <div class="wrap">
+    <h2 data-tr="Denetim ve bildirim" data-en="Audit and reporting">Denetim ve bildirim</h2>
+    <p class="sub" data-tr="Uygulama kendi üzerinde bir saldırgan gibi denendi: parola deneme, dosya adından bilgi sızdırma, bozulmuş depo, yetkisiz cihaz, ayar dosyasını elle değiştirme. Bulunan üç gerçek açık kapatıldı; hepsi rapordadır." data-en="The app was attacked on purpose: passphrase guessing, leaking information through file names, a damaged repository, an unauthorised device, hand-edited settings. Three real findings were fixed; all of it is in the report.">Uygulama kendi üzerinde bir saldırgan gibi denendi: parola deneme, dosya adından bilgi sızdırma, bozulmuş depo, yetkisiz cihaz, ayar dosyasını elle değiştirme. Bulunan üç gerçek açık kapatıldı; hepsi rapordadır.</p>
+    <div class="dl">
+      <a class="btn second" href="AUDIT.md">AUDIT.md</a>
+      <a class="btn second" href="SECURITY.md">SECURITY.md</a>
+    </div>
+    <p class="small" data-tr="Bir açık bulursan GitHub&#39;da bir konu aç; güvenlikle ilgiliyse önce özel olarak bildir." data-en="If you find a hole, open an issue on GitHub; if it is security-related, report it privately first.">Bir açık bulursan GitHub'da bir konu aç; güvenlikle ilgiliyse önce özel olarak bildir.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav>
+      <a href="index.html" data-tr="Ana sayfa" data-en="Home">Ana sayfa</a>
+      <a href="indir.html" data-tr="İndir" data-en="Download">İndir</a>
+      <a href="guvenlik.html" data-tr="Güvenlik" data-en="Security">Güvenlik</a>
+      <a href="belgeler.html" data-tr="Belgeler" data-en="Docs">Belgeler</a>
+      <a href="sss.html" data-tr="SSS" data-en="FAQ">SSS</a>
+      <a href="surumler.html" data-tr="Sürümler" data-en="Releases">Sürümler</a>
+      <a href="gizlilik.html" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a>
+      <a href="https://github.com/Ashura-Space/backup-app">GitHub</a>
+    </nav>
+    <p class="small">Backup App 2.0 · <span data-tr="Ücretsiz ve açık formatlı." data-en="Free, with an open format.">Ücretsiz ve açık formatlı.</span></p>
+    <p class="small" data-tr="Bu site dışarıdan hiçbir şey yüklemez: yazı tipi, betik ve ölçüm dahil. Seni kimseye tanıtmaz." data-en="This site loads nothing from anywhere else: no fonts, no scripts, no analytics. It introduces you to no one.">Bu site dışarıdan hiçbir şey yüklemez: yazı tipi, betik ve ölçüm dahil. Seni kimseye tanıtmaz.</p>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+
+</body>
+</html>
