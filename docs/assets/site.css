@@ -16,13 +16,44 @@
   --ok:#16a34a; --ok-soft:#e3f6ea; --warn:#b45309; --warn-soft:#fef3c7;
   --radius:12px; --wrap:1080px;
 }
+/* Koyu tema iki yoldan gelir: ziyaretcinin isletim sistemi koyuysa
+   kendiliginden, ya da sag ustteki dugmeyle acikca. Dugmeyle yapilan secim
+   sistemin sectiginden ustundur — bu yuzden ayni renkler iki blokta yazili:
+   biri sistem icin, digeri secim icin. */
 @media (prefers-color-scheme:dark){
-  :root{
+  :root:not([data-theme="light"]){
     --bg:#0f1115; --card:#171a21; --ink:#e5e7eb; --dim:#9ca3af;
     --line:#262b36; --blue:#60a5fa; --blue-soft:#1a2a45;
     --ok:#4ade80; --ok-soft:#14301f; --warn:#fbbf24; --warn-soft:#3b2f14;
   }
 }
+:root[data-theme="dark"]{
+  --bg:#0f1115; --card:#171a21; --ink:#e5e7eb; --dim:#9ca3af;
+  --line:#262b36; --blue:#60a5fa; --blue-soft:#1a2a45;
+  --ok:#4ade80; --ok-soft:#14301f; --warn:#fbbf24; --warn-soft:#3b2f14;
+}
+
+/* ---- Tema dugmesi -------------------------------------------------------
+   Uygulamadaki kayan dugmenin sitedeki karsiligi: gunes solda, ay sagda,
+   yuvarlak tutamak ikisinin arasinda kayar. */
+.tt{
+  position:relative; width:56px; height:30px; flex:0 0 auto; padding:0;
+  border:1px solid var(--line); border-radius:999px; background:var(--card);
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
+}
+.tt svg{position:absolute; top:6px; width:18px; height:18px; stroke-width:1.8;
+        fill:none; stroke:var(--dim); transition:stroke .2s ease}
+.tt .sun{left:6px}
+.tt .moon{right:6px}
+.tt .knob{
+  position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%;
+  background:var(--blue); transition:transform .2s cubic-bezier(.2,.8,.2,1);
+}
+:root[data-theme="dark"] .tt .knob,
+.tt[aria-pressed="true"] .knob{transform:translateX(26px)}
+.tt[aria-pressed="true"] .moon{stroke:#fff}
+.tt[aria-pressed="false"] .sun{stroke:#fff}
+.tt:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
