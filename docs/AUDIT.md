@@ -9,8 +9,8 @@ kapanır:
 - **Karşılığı var** — web hâli geçersiz ama aynı riskin masaüstü karşılığı var.
 - **Geçersiz** — bu mimaride böyle bir yüzey yok. Sebebi yazılı.
 
-Denetim tarihi: 10 Eylül 2026. Sürüm 2.0.0. Bulgular düzeltildi ve her biri için
-saldırı testi yazıldı (`--selftest`: Google sürümü 713, Lite 574 sınama).
+Denetim tarihi: 10–11 Eylül 2026. Sürüm 2.0.0. Bulgular düzeltildi ve her biri için
+saldırı testi yazıldı (`--selftest`: Google sürümü 858, Lite 677 sınama).
 
 ---
 
@@ -50,6 +50,73 @@ geri dönülecek bir kopya yoktu.
 
 **Düzeltme:** Her kayıtta bir önceki hâli `config.json.bak` olarak bırakılıyor.
 Ana dosya okunamazsa yedekten okunuyor ve bu günlüğe yazılıyor.
+
+---
+
+## İkinci tur: kurulu uygulamaya saldırı (11 Eylül 2026)
+
+Birinci tur kodu okuyarak yapılmıştı. Bu tur, bu bilgisayarda **kurulu** hâle
+karşı yapıldı: saldırganın gerçekten eline geçecek şeylere bakıldı —
+`%AppData%\UsbBackup` içeriği, kayıt defteri, günlük ve yedeğin kendisi.
+
+### B4 — Yetkili cihazın anahtar dosyası kopyalanabiliyordu (yüksek)
+
+Bir USB'nin yetkili olup olmadığına yalnızca kökündeki gizli `.usbbackup_key`
+dosyasındaki belirtece bakılıyordu. O dosya gizli ve sistem işaretli, ama
+gizlemek korumak değildir: kopyalanabilir.
+
+**Saldırı.** Yetkili belleğe bir dakikalığına erişen biri anahtar dosyasını
+kendi belleğine kopyalar. O belleği kurbanın bilgisayarına taktığında uygulama
+onu yetkili cihaz sanır ve — "takılınca yedekle" açıksa — kurbanın klasörlerini
+**saldırganın belleğine** yazar. Bir yedekleme uygulamasında bu, veri
+sızdırmanın en kısa yoludur.
+
+Profilde sürücünün birim seri numarası zaten saklanıyordu; hiçbir yerde
+karşılaştırılmıyordu.
+
+**Düzeltme:** Eşleşme artık belirteç **ve** birim seri numarası ister. Belirteci
+taşıyıp sürücüsü tutmayan bir bellek yetkili sayılmaz; kullanıcıya "bu,
+yetkilendirdiğiniz cihaz değil" bildirimi gider ve kendi cihazını biçimlediyse
+yeniden yetkilendirmesi söylenir. Seri numarası bilinmeyen eski profiller ve
+seri numarası vermeyen sürücüler eskisi gibi çalışır: yeni bir denetim, çalışan
+bir kurulumu sessizce bozmamalı.
+
+**Sınırı.** Birim seri numarası yönetici hakkıyla değiştirilebilir. Bu bir duvar
+değil eşik: saldırı artık bir dosyayı kopyalamakla yapılamıyor.
+
+### B5 — Tanıtım kodunun süresi ayar dosyasından uzatılabiliyordu (düşük)
+
+Kod bir gün sürüyor ve bitiş tarihi `config.json` içinde `PromoExpiresUtc`
+alanında duruyordu. Dosya kullanıcının kendi hesabında: tarihi 2099 yapmak bir
+metin düzenleme işiydi. Aynı dosyayı başka bir bilgisayara taşımak da yeni bir
+gün açıyordu.
+
+**Düzeltme:** İkinci bir kayıt zaten vardı — kodun ilk kullanıldığı an, kayıt
+defterinde. Süre artık ikisinden **önce bitenle** hesaplanıyor. Ayar dosyasında
+kod yazıyor ama bu bilgisayarın defterinde iz yoksa, ayar başka bir
+bilgisayardan taşınmıştır ve plan verilmez.
+
+**Sınırı.** Kayıt defteri de kullanıcının elinde. Çevrimdışı bir lisans hiçbir
+zaman kurcalanamaz olamaz; amaç, sınırın tek bir alanı düzenlemekle kalkmaması.
+
+### Denenip bir şey çıkmayanlar
+
+| Deneme | Sonuç |
+|---|---|
+| Ayar dosyasına elle Owner rolü yazmak | Plan yalnızca imzalı anahtardan geliyor |
+| Başka bir imzayla Owner anahtarı üretmek | İmza doğrulanmıyor, plan Free |
+| Ayar dosyasından cihaz kodunu okumak | Kod yok; yalnızca PBKDF2 özeti (200.000 tur) |
+| Ayar dosyasından kasa parolasını okumak | Parola ayar dosyasına hiç girmiyor |
+| `credentials.bin` içinde düz metin aramak | Yok; DPAPI ile sarılı |
+| Günlükte parola aramak | Yok |
+| Yedeğin kendisinden dosya adı okumak | Adlar HMAC ile gizli, içerik AES-256-GCM |
+| Şifreli bir dosyanın tek bitini değiştirmek | Çözme reddediliyor |
+
+**Kaçınılmaz olan.** `config.json` hangi cihazların yetkili olduğunu, yedeğin
+nereye gittiğini ve hangi klasörlerin yedeklendiğini gösterir. Bunlar
+gizlenemez: uygulamanın çalışması için okunmaları gerekir ve dosya kullanıcının
+kendi hesabındadır. Aynı hesapta çalışan bir program `credentials.bin`'i de
+çözebilir — DPAPI'nin sınırı budur ve [SECURITY.md](SECURITY.md) içinde yazılı.
 
 ---
 
