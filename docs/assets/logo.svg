@@ -1,49 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Backup App">
-  <defs>
-    <linearGradient id="kap" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#7C63C4"/>
-      <stop offset="1" stop-color="#5B4396"/>
-    </linearGradient>
-    <radialGradient id="isik" cx="0.2" cy="0.12" r="0.62">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.24"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="gul" cx="0.96" cy="1" r="0.6">
-      <stop offset="0" stop-color="#E79ABA" stop-opacity="0.42"/>
-      <stop offset="1" stop-color="#E79ABA" stop-opacity="0"/>
-    </radialGradient>
-    <clipPath id="kirp">
-      <rect x="2" y="2" width="96" height="96" rx="30"/>
-    </clipPath>
-  </defs>
+  <!--
+    Uygulamanin ikonuyla ayni cizim: arkada ince cerceveli bir kart, onunde
+    dolu beyaz bir kart ve icinde mavi bir onay. Bir seyin ikinci bir kopyasi
+    var ve o kopya tamam.
 
-  <!-- Material You squircle kap -->
-  <rect x="2" y="2" width="96" height="96" rx="30" fill="url(#kap)"/>
-  <g clip-path="url(#kirp)">
-    <rect x="2" y="2" width="96" height="96" fill="url(#isik)"/>
-    <rect x="2" y="2" width="96" height="96" fill="url(#gul)"/>
-  </g>
-
-  <!-- Evrensel USB isareti (yaba), rozet icin hafifce sola kaydirilmis -->
-  <g transform="translate(41 47) scale(0.88) translate(-41 -47)"
-     fill="none" stroke="#ffffff" stroke-width="7.5"
-     stroke-linecap="round" stroke-linejoin="round">
-    <line x1="41" y1="24" x2="41" y2="76"/>
-    <polyline points="41,60 21,60 21,44"/>
-    <polyline points="41,48 61,48 61,36"/>
-    <circle cx="61" cy="27" r="7" stroke-width="6"/>
-  </g>
-  <g transform="translate(41 47) scale(0.88) translate(-41 -47)" fill="#ffffff">
-    <circle cx="41" cy="78" r="8"/>
-    <polygon points="41,8 51,26 31,26"/>
-    <rect x="14" y="30" width="14" height="14" rx="3"/>
-  </g>
-
-  <!-- Yedekleme rozeti: asagi ok -->
-  <circle cx="78.5" cy="78.5" r="16.5" fill="#ffffff"/>
-  <circle cx="78.5" cy="78.5" r="13.3" fill="#8E4A63"/>
-  <g fill="none" stroke="#ffffff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="78.5" y1="70.5" x2="78.5" y2="84"/>
-    <polyline points="72.3,78 78.5,84.4 84.7,78"/>
-  </g>
+    Duz renk, tek isaret, gradyan yok: 16 piksele indiginde de ayakta kalsin.
+  -->
+  <rect x="2" y="2" width="96" height="96" rx="28" fill="#2563eb"/>
+  <rect x="24" y="20" width="44" height="44" rx="10"
+        fill="none" stroke="#ffffff" stroke-opacity="0.59" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="34" y="34" width="46" height="46" rx="11" fill="#ffffff"/>
+  <polyline points="45,57 54,66 70,47"
+            fill="none" stroke="#2563eb" stroke-width="7"
+            stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
