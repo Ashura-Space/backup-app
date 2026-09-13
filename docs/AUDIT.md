@@ -10,7 +10,7 @@ kapanır:
 - **Geçersiz** — bu mimaride böyle bir yüzey yok. Sebebi yazılı.
 
 Denetim tarihi: 10–11 Eylül 2026. Sürüm 2.0.0. Bulgular düzeltildi ve her biri için
-saldırı testi yazıldı (`--selftest`: Google sürümü 839, Lite 658 sınama).
+saldırı testi yazıldı (`--selftest`: Google sürümü 865, Lite 684 sınama).
 
 ---
 
@@ -104,6 +104,93 @@ bilgisayarda.
 süresini korumaya çalışmaktan sağlam: artık iki sürümün ikilisinde de gömülü
 hiçbir üyelik anahtarı yok. Üyelik yalnızca sahibin imzaladığı ve elden verdiği
 anahtarla açılıyor.
+
+### B6 — Düşmanca kasa başlığıyla hizmet engelleme (orta)
+
+Bu tur, koda bakarak değil düşmanca girdi vererek yapıldı: takılan bir
+cihazdan okunan her dosyaya — anahtar dosyası, değişiklik özeti, kasa başlığı,
+dizin — bozuk ya da kasıtlı içerik verildi. Bir tanesi işledi.
+
+`vault.json` saldırganın elindeki bir dosyadır: USB'de, NAS'ta, bulut
+klasöründe durur. İçindeki tur sayısının alt sınırı vardı (1000), **üst sınırı
+yoktu**; yuva sayısının hiç sınırı yoktu; dosyanın kendisi de boyutuna
+bakılmadan belleğe okunuyordu.
+
+**Saldırı.** Tek satırlık bir başlık: `"iterations": 2147483647`. Bu
+bilgisayarda 600.000 tur 99 ms sürüyor; iki milyar tur yuva başına yaklaşık
+**altı dakika**. Yuva sayısı da sınırsız olduğundan yüz yuvalık bir başlık on
+saat demek. Geri yükleme penceresi başlığı arayüz iş parçacığında açtığı için
+pencere o süre donuyor; arka plandaki yedekleme ise cihazın kilidini elinde
+tutarak askıda kalıyor ve PBKDF2 iptal edilemiyor. Kullanıcının gördüğü:
+"uygulama çöktü". Aynı dosyayı bir NAS'a ya da bulut klasörüne koymak da
+yeterli — cihaz takmak gerekmiyor.
+
+**Düzeltme:** Üç sınır. Yuva başına tur sayısı en çok 10.000.000 (bugünkü
+varsayılanın on beş katı — ileride artırmaya yer bırakır, saldırıya bırakmaz);
+başlıkta en çok 16 yuva (gerçeğinde iki-üç olur); başlık dosyası en çok 256 KB
+(gerçeği bir-iki kilobayt). Sınır dışı bir başlık *denenmeden* reddediliyor ve
+günlüğe yazılıyor. Sınama: iki milyar turluk başlık iki saniyenin altında
+reddediliyor, bin yuvalı başlık okunma aşamasında düşüyor, dev dosya bütünüyle
+okunmadan geri çevriliyor; gerçek başlıklar aynen açılıyor.
+
+**Denenip işlemeyenler (aynı tur).** Bozuk anahtar dosyası, bozuk değişiklik
+özeti ve bozuk dizin yuvaları yakalanıyor — yedekleme uyarıyla devam ediyor.
+Kasa dosyası başlığındaki parça boyutu 64 MB ile, yol uzunluğu 65.535 ile
+sınırlı. Tek örnek kanalı yalnızca "pencereyi göster" diyor; başka bir yerel
+süreç bundan fazlasını yaptıramıyor. Google girişinin yerel dinleyicisi
+rastgele `state` ister, uymayan isteğe 404 verip beklemeye devam eder ve akış
+PKCE ile biter — başka bir yerel süreç kodu çalamıyor. Arayüzdeki ve arka
+plandaki hatalar yakalanıyor, uygulama kapanmıyor; çökme penceresi "bunu
+bildir" düğmesiyle geri bildirime bağlı.
+
+**Kaçınılmaz olanlar.** Kurulum klasörü (`%LocalAppData%\Programs`) kullanıcı
+hesabına yazılabilir: aynı hesapta çalışan bir program uygulamanın kendisini
+değiştirebilir. Bu, kullanıcı başına kurulan her uygulamanın (Chrome, VS Code)
+ortak durumudur ve yönetici hakkı istemeden çözülemez. Aynı hesap
+`config.json`'ı da yazabilir, yani bir ağ hedefini kendi paylaşımına
+yönlendirebilir — ama o hesapta çalışabilen biri dosyaları zaten doğrudan
+okuyabilir.
+
+### B7 — Görev Zamanlayıcı yolu USB Guard'ı atlıyordu (orta)
+
+Uygulamanın cihaz takılınca yedekleyen iki yolu var: tepsi süreci ve
+"arka planda hiçbir şey durmasın" seçildiğinde Görev Zamanlayıcı'nın
+`--triggered` ile açtığı kısa ömürlü süreç. Tepsi yedeklemeden önce Defender
+taramasını yapıyor, tehdit varsa yedeklemeyi başlatmıyor, sonra değişiklik
+özetini yazıyordu. İkinci yol bunların hiçbirini yapmıyordu: aynı cihaz, aynı
+ayar, ama tarama yok. Kopyalanmış anahtar dosyası ve kayıp anahtar durumları da
+orada sessizce geçiliyordu.
+
+**Düzeltme:** Kapı tek yere alındı (`UsbGuard.BlocksBackup`) ve iki yol da
+oradan geçiyor. `--triggered` artık taramayı yapıyor, tehditte durmuyor,
+başarılı yedekten sonra özeti yazıyor ve kopya/kayıp anahtar durumlarını
+günlüğe yazıyor (o yolda gösterecek tepsi yok). Bir koruma yalnızca bir yoldan
+geçerliyse koruma değil, rastlantıdır.
+
+### Üçüncü tur: yüzey haritası (13 Eylül 2026)
+
+Bu turda "içeri girilebilir mi" sorusuna yüzeyi sayarak bakıldı. Uygulamanın
+dinlediği, kabul ettiği ve dışarıya konuştuğu her şey:
+
+| Yüzey | Ne var | Sonuç |
+|---|---|---|
+| Ağ dinleyicisi | Yalnızca Google girişi sırasında, `127.0.0.1` üzerinde geçici bir kapı | `state` eşleşmeyen isteğe 404; PKCE olduğu için kodu ele geçiren bile jeton alamaz. Lite'ta hiç yok. |
+| Süreçler arası kanal | `Local\` kilit ve bir olay nesnesi | Aynı hesaptaki bir süreç yalnızca pencereyi öne getirebilir. Başka komut yok. |
+| Görev Zamanlayıcı | `"exe" --triggered`, argümansız | Sürücüyü kendi bulur; dışarıdan yol enjekte edilemez. |
+| Dışarıya konuşulan adresler | Lite ikilisi tarandı | Yalnızca örnek/yer tutucu adresler ve görev XML şeması. Ölçüm, güncelleme, telemetri adresi yok. |
+| Kurulum klasörü | `%LocalAppData%\Programs\UsbBackup`, kullanıcıya yazılabilir | Aynı hesapta çalışan bir program exe'yi değiştirebilir. Bu, yönetici istemeyen her kurulumun sınırıdır ve bir "sızma" değil, o hesabın zaten ele geçmiş olmasıdır. |
+| Gömülü sırlar | İki sürümün ikilisi tarandı | Üyelik anahtarı yok (tanıtım kodu kaldırıldı). Google sürümünde OAuth istemci kimliği var; masaüstü istemcilerde gizli sayılmaz, PKCE asıl korumadır. |
+
+**Sızılırsa ne olur?** Dürüst cevap iki katmanlı. Uygulamanın kendisine
+dışarıdan, ağ üzerinden girilecek bir kapı yok: sunucu yok, açık dinleyici yok.
+Saldırganın yolu bilgisayarın kendisinden geçer — aynı Windows hesabında
+çalışan bir program. O noktada `config.json` (hangi cihazlar, hangi klasörler,
+yedek nereye), `credentials.bin` (DPAPI ile sarılı; aynı hesap çözer) ve dolayısıyla
+kasa parolası okunabilir. Bu, uygulamanın değil, Windows hesabının sınırıdır ve
+[SECURITY.md](SECURITY.md) baştan beri böyle söylüyor. Uygulamanın yaptığı şey,
+bu sınırın **dışında** kalan her şeyi kapatmak: yedeğin durduğu yerden (bellek,
+NAS, bulut) hiçbir şey okunamaz, kopyalanan anahtar dosyası yetki vermez,
+tanıtım anahtarı yok, ayar dosyasından rol alınamaz.
 
 ### Denenip bir şey çıkmayanlar
 
