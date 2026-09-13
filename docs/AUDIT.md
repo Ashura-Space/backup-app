@@ -10,7 +10,7 @@ kapanır:
 - **Geçersiz** — bu mimaride böyle bir yüzey yok. Sebebi yazılı.
 
 Denetim tarihi: 10–11 Eylül 2026. Sürüm 2.0.0. Bulgular düzeltildi ve her biri için
-saldırı testi yazıldı (`--selftest`: Google sürümü 858, Lite 677 sınama).
+saldırı testi yazıldı (`--selftest`: Google sürümü 839, Lite 658 sınama).
 
 ---
 
@@ -84,20 +84,26 @@ bir kurulumu sessizce bozmamalı.
 **Sınırı.** Birim seri numarası yönetici hakkıyla değiştirilebilir. Bu bir duvar
 değil eşik: saldırı artık bir dosyayı kopyalamakla yapılamıyor.
 
-### B5 — Tanıtım kodunun süresi ayar dosyasından uzatılabiliyordu (düşük)
+### B5 — Tanıtım kodu kaldırıldı (düşük)
 
-Kod bir gün sürüyor ve bitiş tarihi `config.json` içinde `PromoExpiresUtc`
-alanında duruyordu. Dosya kullanıcının kendi hesabında: tarihi 2099 yapmak bir
-metin düzenleme işiydi. Aynı dosyayı başka bir bilgisayara taşımak da yeni bir
-gün açıyordu.
+Bir gün süren bir tanıtım kodu vardı. İki ayrı zayıflığı çıktı.
 
-**Düzeltme:** İkinci bir kayıt zaten vardı — kodun ilk kullanıldığı an, kayıt
-defterinde. Süre artık ikisinden **önce bitenle** hesaplanıyor. Ayar dosyasında
-kod yazıyor ama bu bilgisayarın defterinde iz yoksa, ayar başka bir
-bilgisayardan taşınmıştır ve plan verilmez.
+Birincisi: bitiş tarihi `config.json` içinde duruyordu ve dosya kullanıcının
+kendi hesabında. Tarihi 2099 yapmak bir metin düzenleme işiydi. Buna karşı
+kayıt defterindeki ilk kullanım damgasıyla çapraz kontrol konuldu — süre,
+ikisinden önce bitenle hesaplanır oldu.
 
-**Sınırı.** Kayıt defteri de kullanıcının elinde. Çevrimdışı bir lisans hiçbir
-zaman kurcalanamaz olamaz; amaç, sınırın tek bir alanı düzenlemekle kalkmaması.
+İkincisi daha kötüydü ve düzeltmeyi anlamsız kılıyordu: kodun karşılığı olan
+**imzalı Pro anahtarı uygulamanın ikilisinde duruyordu.** Tek dosyalık yayının
+içinden çıkarılıp doğrudan üyelik kutusuna yapıştırılabilirdi ve o yoldan
+gelindiğinde ayar dosyasında kodun adı yazmadığı için süre denetimi hiç
+işlemiyordu. Yani bir günlük kod, süresiz bir üyeliğe dönüyordu — hem de her
+bilgisayarda.
+
+**Düzeltme:** Tanıtım kodu tamamen kaldırıldı. Anahtarı hiç taşımamak, taşıyıp
+süresini korumaya çalışmaktan sağlam: artık iki sürümün ikilisinde de gömülü
+hiçbir üyelik anahtarı yok. Üyelik yalnızca sahibin imzaladığı ve elden verdiği
+anahtarla açılıyor.
 
 ### Denenip bir şey çıkmayanlar
 
